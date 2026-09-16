@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edu-Net — World-Class Education</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #05050a;
+  --bg2: #080810;
+  --surface: rgba(255,255,255,0.03);
+  --surface2: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.06);
+  --border-glow: rgba(139,92,246,0.3);
+  --text: #f0f0ff;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --purple: #8b5cf6;
+  --purple2: #7c3aed;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --pink: #ec4899;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* NAVBAR */
+nav {
+  position: fixed;
+  top: 16px; left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 80px);
+  max-width: 1180px;
+  z-index: 500;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border-radius: 18px;
+  background: rgba(10,8,20,0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139,92,246,0.18);
+  box-shadow:
+    0 0 0 1px rgba(139,92,246,0.08),
+    0 0 30px rgba(139,92,246,0.12),
+    0 0 80px rgba(109,40,217,0.08),
+    0 8px 32px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  transition: box-shadow 0.4s, background 0.4s, border-color 0.4s;
+  animation: nav-appear 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes nav-appear {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+nav.scrolled {
+  background: rgba(8,6,18,0.88);
+  border-color: rgba(139,92,246,0.28);
+  box-shadow:
+    0 0 0 1px rgba(139,92,246,0.12),
+    0 0 40px rgba(139,92,246,0.18),
+    0 0 100px rgba(109,40,217,0.1),
+    0 12px 40px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+nav::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 19px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(139,92,246,0.15) 30%,
+    rgba(96,165,250,0.1) 50%,
+    rgba(139,92,246,0.15) 70%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: nav-sweep 6s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.7;
+}
+
+@keyframes nav-sweep {
+  0%   { background-position: -100% 0; }
+  100% { background-position: 300% 0; }
+}
+
+nav::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 30px;
+  background: radial-gradient(ellipse, rgba(139,92,246,0.25) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(8px);
+  animation: nav-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes nav-glow-pulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleX(1); }
+  50%       { opacity: 1;   transform: translateX(-50%) scaleX(1.1); }
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.3px;
+}
+
+.logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #4f1d96, #7c3aed, #a78bfa);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(167,139,250,0.3),
+    0 0 16px rgba(139,92,246,0.5),
+    0 0 32px rgba(109,40,217,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: box-shadow 0.3s, transform 0.3s;
+  flex-shrink: 0;
+}
+
+.logo-icon:hover {
+  box-shadow:
+    0 0 0 1px rgba(167,139,250,0.5),
+    0 0 24px rgba(139,92,246,0.7),
+    0 0 48px rgba(109,40,217,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent);
+  border-radius: 11px 11px 0 0;
+  pointer-events: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted2);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--purple);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 rgba(139,92,246,0);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139,92,246,0.5);
+}
+
+.btn-primary:hover::before { opacity: 1; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 140px 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 100%);
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: orb-float 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(109,40,217,0.25), transparent 70%);
+  top: 5%; left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(96,165,250,0.12), transparent 70%);
+  top: 20%; right: 5%;
+  animation-delay: -3s;
+}
+
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(236,72,153,0.1), transparent 70%);
+  bottom: 10%; left: 5%;
+  animation-delay: -5s;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-size: 13px;
+  color: var(--purple);
+  font-weight: 500;
+  margin-bottom: 32px;
+  letter-spacing: 0.3px;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s ease infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(42px, 5.5vw, 76px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  max-width: 820px;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 .line2 {
+  display: block;
+  background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 40%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200%;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both, gradient-shift 4s ease infinite 1s;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero-desc {
+  color: var(--muted2);
+  font-size: 16.5px;
+  max-width: 500px;
+  line-height: 1.75;
+  margin-top: 22px;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  margin-top: 40px;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(139,92,246,0.5);
+  background: rgba(139,92,246,0.07);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 72px;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.4s both;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.stat {
+  text-align: center;
+  padding: 24px 48px;
+  position: relative;
+}
+
+.stat:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: var(--border);
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  display: block;
+}
+
+.stat-num.blue { color: var(--blue); text-shadow: 0 0 30px rgba(96,165,250,0.4); }
+.stat-num.green { color: var(--green); text-shadow: 0 0 30px rgba(16,185,129,0.4); }
+.stat-num.orange { color: var(--orange); text-shadow: 0 0 30px rgba(245,158,11,0.4); }
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.3px;
+}
+
+.section-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 100px 48px;
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(139,92,246,0.08);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: var(--purple);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(30px, 3.5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 14px;
+  line-height: 1.1;
+}
+
+.section-sub {
+  color: var(--muted2);
+  font-size: 16px;
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+.text-center { text-align: center; }
+.text-center .section-sub { margin: 0 auto; }
+
+/* FEATURES */
+.features-section {
+  padding: 0 0 40px;
+  position: relative;
+}
+
+.features-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(139,92,246,0.03) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 56px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.feature-card:nth-child(1)::before { background: radial-gradient(circle at 0% 0%, rgba(96,165,250,0.08), transparent 60%); }
+.feature-card:nth-child(2)::before { background: radial-gradient(circle at 100% 0%, rgba(139,92,246,0.1), transparent 60%); }
+.feature-card:nth-child(3)::before { background: radial-gradient(circle at 100% 100%, rgba(16,185,129,0.08), transparent 60%); }
+.feature-card:nth-child(4)::before { background: radial-gradient(circle at 0% 100%, rgba(245,158,11,0.08), transparent 60%); }
+.feature-card:nth-child(5)::before { background: radial-gradient(circle at 50% 50%, rgba(236,72,153,0.08), transparent 60%); }
+.feature-card:nth-child(6)::before { background: radial-gradient(circle at 100% 50%, rgba(34,211,238,0.08), transparent 60%); }
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(139,92,246,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1);
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 24px; right: 24px;
+  height: 1px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature-card:nth-child(1)::after { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+.feature-card:nth-child(2)::after { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+.feature-card:nth-child(3)::after { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.feature-card:nth-child(4)::after { background: linear-gradient(90deg, transparent, var(--orange), transparent); }
+.feature-card:nth-child(5)::after { background: linear-gradient(90deg, transparent, var(--pink), transparent); }
+.feature-card:nth-child(6)::after { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+.feature-card:hover::after { opacity: 1; }
+
+.feature-icon-wrap {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.fi-blue { background: rgba(96,165,250,0.12); box-shadow: 0 0 20px rgba(96,165,250,0.15); }
+.fi-purple { background: rgba(139,92,246,0.12); box-shadow: 0 0 20px rgba(139,92,246,0.15); }
+.fi-green { background: rgba(16,185,129,0.12); box-shadow: 0 0 20px rgba(16,185,129,0.15); }
+.fi-orange { background: rgba(245,158,11,0.12); box-shadow: 0 0 20px rgba(245,158,11,0.15); }
+.fi-pink { background: rgba(236,72,153,0.12); box-shadow: 0 0 20px rgba(236,72,153,0.15); }
+.fi-cyan { background: rgba(34,211,238,0.12); box-shadow: 0 0 20px rgba(34,211,238,0.15); }
+
+.feature-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 9px;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.3px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.65;
+  position: relative;
+  z-index: 1;
+}
+
+/* HOW IT WORKS */
+.hiw-section {
+  background: linear-gradient(180deg, transparent, rgba(139,92,246,0.04) 50%, transparent);
+  padding: 0;
+}
+
+.hiw-inner { max-width: 1200px; margin: 0 auto; padding: 100px 48px; }
+
+.hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 56px;
+  position: relative;
+}
+
+.hiw-steps::before {
+  content: '';
+  position: absolute;
+  top: 36px; left: 16.6%; right: 16.6%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), var(--blue), transparent);
+  opacity: 0.3;
+}
+
+.hiw-step {
+  text-align: center;
+  padding: 32px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  position: relative;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.hiw-step:hover {
+  border-color: rgba(139,92,246,0.3);
+  transform: translateY(-4px);
+}
+
+.hiw-icon-wrap {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 26px;
+  position: relative;
+  box-shadow: 0 0 40px rgba(139,92,246,0.3);
+}
+
+.hiw-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 24px; height: 24px;
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: 'Syne', sans-serif;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+}
+
+.hiw-step h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.hiw-step p { font-size: 14px; color: var(--muted2); line-height: 1.65; }
+
+/* TESTIMONIALS */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 56px;
+}
+
+.t-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.t-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(139,92,246,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.t-card:hover {
+  border-color: rgba(139,92,246,0.25);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.quote-mark {
+  font-family: Georgia, serif;
+  font-size: 48px;
+  line-height: 1;
+  color: rgba(139,92,246,0.3);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.t-card p {
+  font-size: 14.5px;
+  color: var(--muted2);
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+
+.t-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.t-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6d28d9, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(139,92,246,0.3);
+}
+
+.t-name {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.t-role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.t-stars { color: #fbbf24; font-size: 13px; margin-top: 12px; letter-spacing: 2px; }
+
+/* FAQ */
+.faq-section { position: relative; }
+
+.faq-list {
+  max-width: 760px;
+  margin: 56px auto 0;
+}
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+  background: var(--surface);
+}
+
+.faq-item.open {
+  border-color: rgba(139,92,246,0.3);
+  box-shadow: 0 0 30px rgba(139,92,246,0.06);
+}
+
+.faq-q {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 20px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  letter-spacing: -0.1px;
+}
+
+.faq-chevron {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), background 0.3s;
+  font-size: 14px;
+  color: var(--muted2);
+}
+
+.faq-item.open .faq-chevron {
+  transform: rotate(180deg);
+  background: rgba(139,92,246,0.2);
+  color: var(--purple);
+}
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16,1,0.3,1);
+  font-size: 14.5px;
+  color: var(--muted2);
+  line-height: 1.75;
+}
+
+.faq-a-inner { padding: 0 24px 20px; }
+
+.faq-item.open .faq-a { max-height: 300px; }
+
+/* CTA SECTION */
+.cta-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.cta-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 100px 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(109,40,217,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.cta-inner h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin-bottom: 16px;
+}
+
+.cta-inner p { color: var(--muted2); font-size: 16px; margin-bottom: 36px; line-height: 1.7; }
+
+/* FOOTER */
+footer {
+  background: var(--bg);
+  padding: 70px 80px 32px;
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer-logo { margin-bottom: 16px; }
+
+.footer-desc {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 230px;
+}
+
+.footer-col h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 18px;
+}
+
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 11px; }
+.footer-col ul li a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+.footer-col ul li a:hover { color: var(--text); }
+
+.footer-bottom {
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer-links { display: flex; gap: 28px; }
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text); }
+
+/* CHAT BUBBLE */
+.chat-btn {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #4f1d96, #7c3aed, #a78bfa);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow:
+    0 0 0 1px rgba(167,139,250,0.3),
+    0 0 20px rgba(139,92,246,0.5),
+    0 0 0 0 rgba(139,92,246,0.4);
+  animation: chat-pulse 3s ease infinite;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-btn:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 0 0 1px rgba(167,139,250,0.5), 0 0 32px rgba(139,92,246,0.7); }
+
+@keyframes chat-pulse {
+  0% { box-shadow: 0 0 0 1px rgba(167,139,250,0.3), 0 0 20px rgba(139,92,246,0.5), 0 0 0 0 rgba(139,92,246,0.5); }
+  70% { box-shadow: 0 0 0 1px rgba(167,139,250,0.3), 0 0 20px rgba(139,92,246,0.5), 0 0 0 16px rgba(139,92,246,0); }
+  100% { box-shadow: 0 0 0 1px rgba(167,139,250,0.3), 0 0 20px rgba(139,92,246,0.5), 0 0 0 0 rgba(139,92,246,0); }
+}
+
+.chat-online {
+  position: absolute;
+  top: -3px; right: -3px;
+  width: 13px; height: 13px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 8px rgba(34,197,94,0.6);
+}
+
+/* Main Chatbot Panel */
+.main-chat-overlay {
+  position: fixed;
+  bottom: 96px; right: 28px;
+  width: 380px; height: 560px;
+  z-index: 998;
+  display: flex; flex-direction: column;
+  background: #0d0b1a;
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.1), 0 0 60px rgba(109,40,217,0.25), 0 24px 64px rgba(0,0,0,0.7);
+  transform: scale(0.92) translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
+  transform-origin: bottom right;
+}
+.main-chat-overlay.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+.main-chat-header {
+  display: flex; align-items: center; gap: 11px;
+  padding: 14px 16px;
+  background: rgba(10,8,20,0.8);
+  border-bottom: 1px solid rgba(139,92,246,0.15);
+  flex-shrink: 0;
+}
+.main-chat-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg,#6d28d9,#8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; position: relative; flex-shrink: 0;
+}
+.main-chat-avatar::after {
+  content:''; position:absolute; bottom:1px; right:1px;
+  width:10px; height:10px; background:#22c55e;
+  border-radius:50%; border:2px solid #0d0b1a;
+}
+.main-chat-info { flex:1; }
+.main-chat-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#f0f0ff; }
+.main-chat-status { font-size:11px; color:#22c55e; margin-top:1px; }
+.main-chat-close {
+  width:28px; height:28px; border-radius:8px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+  color:#9ca3af; cursor:pointer; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition: background 0.2s, color 0.2s;
+}
+.main-chat-close:hover { background:rgba(139,92,246,0.2); color:#f0f0ff; }
+.main-chat-msgs {
+  flex:1; overflow-y:auto; padding:16px;
+  display:flex; flex-direction:column; gap:12px;
+  scrollbar-width: thin; scrollbar-color: rgba(139,92,246,0.3) transparent;
+}
+.main-chat-msgs::-webkit-scrollbar { width:4px; }
+.main-chat-msgs::-webkit-scrollbar-thumb { background:rgba(139,92,246,0.3); border-radius:999px; }
+.main-chat-suggestions {
+  padding:8px 12px; display:flex; gap:6px; flex-wrap:wrap;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+.main-chat-sugg-btn {
+  padding:5px 11px; border-radius:999px;
+  border:1px solid rgba(139,92,246,0.3);
+  background:rgba(139,92,246,0.08);
+  color:#a78bfa; font-size:11.5px; cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition: background 0.2s;
+}
+.main-chat-sugg-btn:hover { background:rgba(139,92,246,0.18); }
+.main-chat-input-row {
+  padding:12px 14px;
+  border-top:1px solid rgba(255,255,255,0.07);
+  display:flex; gap:8px; align-items:flex-end;
+  background:rgba(10,8,20,0.6);
+  flex-shrink:0;
+}
+.main-chat-input {
+  flex:1; background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1); border-radius:12px;
+  padding:9px 13px; color:#f0f0ff;
+  font-family:'DM Sans',sans-serif; font-size:13.5px; outline:none;
+  resize:none; line-height:1.5; max-height:100px; overflow-y:auto;
+  transition:border-color 0.25s;
+}
+.main-chat-input::placeholder { color:#6b7280; }
+.main-chat-input:focus { border-color:rgba(139,92,246,0.5); }
+.main-chat-send {
+  width:38px; height:38px; border-radius:11px; border:none;
+  background:linear-gradient(135deg,#7c3aed,#8b5cf6);
+  color:white; font-size:16px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:transform 0.2s, box-shadow 0.2s;
+  box-shadow:0 4px 14px rgba(139,92,246,0.35);
+}
+.main-chat-send:hover { transform:scale(1.08); box-shadow:0 6px 20px rgba(139,92,246,0.5); }
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.4); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.7); }
+
+@media (max-width: 960px) {
+  .features-grid, .testimonials-grid, .hiw-steps { grid-template-columns: 1fr; }
+  .hiw-steps::before { display: none; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  nav { padding: 0 20px; }
+  .section-wrap { padding: 70px 24px; }
+  .hero { padding: 100px 24px 60px; }
+  .hero-stats { flex-direction: column; gap: 0; }
+  .stat:not(:last-child)::after { display: none; }
+}
+
+/* AUTH MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(5,5,15,0.85);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.modal-box {
+  background: #0d0b1a;
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 24px;
+  padding: 36px 36px 32px;
+  width: 100%; max-width: 460px;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(139,92,246,0.1), 0 0 60px rgba(109,40,217,0.2), 0 30px 80px rgba(0,0,0,0.6);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s;
+  opacity: 0; max-height: 90vh; overflow-y: auto;
+}
+.modal-overlay.active .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  color: #9ca3af; width: 32px; height: 32px; border-radius: 8px;
+  cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.modal-close:hover { background: rgba(139,92,246,0.15); color: #f0f0ff; }
+
+.modal-logo {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  margin-bottom: 22px;
+}
+.modal-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; }
+
+.role-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+.role-card {
+  flex: 1; padding: 14px 10px; border-radius: 14px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer; text-align: center;
+  transition: border-color 0.25s, background 0.25s, transform 0.2s, box-shadow 0.25s;
+  position: relative; overflow: hidden;
+}
+.role-card:hover { transform: translateY(-2px); }
+.role-card.selected.student {
+  border-color: rgba(96,165,250,0.6);
+  background: rgba(96,165,250,0.07);
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.12), 0 0 20px rgba(96,165,250,0.15);
+}
+.role-card.selected.teacher {
+  border-color: rgba(245,158,11,0.6);
+  background: rgba(245,158,11,0.07);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.12), 0 0 20px rgba(245,158,11,0.15);
+}
+.role-icon { font-size: 28px; margin-bottom: 6px; display: block; }
+.role-label { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.2px; color: #f0f0ff; }
+.role-desc { font-size: 11px; color: #6b7280; margin-top: 3px; }
+.role-badge {
+  position: absolute; top: 8px; right: 8px;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+}
+.role-card.selected.student .role-badge { display: flex; background: #60a5fa; color: #000; }
+.role-card.selected.teacher .role-badge { display: flex; background: #f59e0b; color: #000; }
+
+.auth-tabs {
+  display: flex; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 4px; margin-bottom: 22px; gap: 4px;
+}
+.auth-tab {
+  flex: 1; padding: 9px 0; border: none; background: transparent;
+  color: #9ca3af; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+  border-radius: 9px; cursor: pointer; transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.auth-tab.active {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: white;
+  box-shadow: 0 4px 15px rgba(139,92,246,0.35);
+}
+
+.role-section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: #6b7280; margin-bottom: 10px;
+}
+
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+
+.auth-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 4px; }
+.auth-sub { font-size: 13px; color: #9ca3af; margin-bottom: 18px; line-height: 1.5; }
+.auth-title.student-color { color: #93c5fd; }
+.auth-title.teacher-color { color: #fcd34d; }
+
+.role-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  margin-bottom: 14px;
+}
+.role-tag.student { background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.3); color: #60a5fa; }
+.role-tag.teacher { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: #f59e0b; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12.5px; font-weight: 500; color: #9ca3af; margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09); border-radius: 10px;
+  padding: 10px 13px; color: #f0f0ff;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  appearance: none; -webkit-appearance: none;
+}
+.form-group select { cursor: pointer; }
+.form-group input::placeholder { color: #6b7280; }
+.form-group input:focus, .form-group select:focus {
+  border-color: rgba(139,92,246,0.55); background: rgba(139,92,246,0.05);
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+}
+.form-group input.student-focus:focus { border-color: rgba(96,165,250,0.55); background: rgba(96,165,250,0.05); box-shadow: 0 0 0 3px rgba(96,165,250,0.1); }
+.form-group input.teacher-focus:focus { border-color: rgba(245,158,11,0.55); background: rgba(245,158,11,0.05); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+.form-forgot { text-align: right; margin-top: -6px; margin-bottom: 16px; }
+.form-forgot a { font-size: 12px; color: #8b5cf6; text-decoration: none; transition: opacity 0.2s; }
+.form-forgot a:hover { opacity: 0.75; }
+
+.btn-auth {
+  width: 100%; padding: 11px; border: none; border-radius: 11px;
+  color: white; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 700;
+  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 4px;
+}
+.btn-auth.student-btn {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6, #60a5fa);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.35);
+}
+.btn-auth.student-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,0.5); }
+.btn-auth.teacher-btn {
+  background: linear-gradient(135deg, #b45309, #d97706, #f59e0b);
+  box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+}
+.btn-auth.teacher-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,158,11,0.5); }
+
+.auth-divider {
+  display: flex; align-items: center; gap: 12px; margin: 16px 0;
+  color: #6b7280; font-size: 12px;
+}
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+
+.btn-google {
+  width: 100%; padding: 10px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09); border-radius: 11px; color: #f0f0ff;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-google:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+
+.auth-switch { text-align: center; margin-top: 16px; font-size: 13px; color: #9ca3af; }
+.auth-switch a { color: #8b5cf6; text-decoration: none; font-weight: 600; cursor: pointer; }
+.auth-switch a:hover { text-decoration: underline; }
+.terms-text { text-align: center; font-size: 11px; color: #6b7280; margin-top: 12px; line-height: 1.6; }
+.terms-text a { color: #9ca3af; text-decoration: underline; }
+
+.subject-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+.chip {
+  padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500;
+  border: 1px solid rgba(245,158,11,0.25); color: #9ca3af; background: rgba(255,255,255,0.03);
+  cursor: pointer; transition: all 0.2s;
+}
+.chip.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.5); color: #f59e0b; }
+.chip:hover { border-color: rgba(245,158,11,0.4); color: #fcd34d; }
+
+/* DASHBOARD */
+.dashboard-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: #05050a;
+  display: flex; flex-direction: row;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow: hidden;
+}
+.dashboard-overlay.active { opacity: 1; pointer-events: all; }
+
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+  transition: width 0.3s;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
+
+.db-nav-section { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #4b5563; text-transform: uppercase; padding: 10px 20px 6px; }
+.db-nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 20px; margin: 1px 10px; border-radius: 10px;
+  cursor: pointer; font-size: 13.5px; font-weight: 500; color: #9ca3af;
+  transition: all 0.2s; position: relative;
+}
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active { background: rgba(139,92,246,0.12); color: #a78bfa; }
+.db-nav-item.active.student-nav { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.db-nav-item.active.teacher-nav { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; }
+.db-avatar.student { background: linear-gradient(135deg,#1d4ed8,#60a5fa); }
+.db-avatar.teacher { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+.db-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.db-topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #f0f0ff; }
+.db-topbar-right { display: flex; align-items: center; gap: 12px; }
+.db-notif-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; transition: background 0.2s; position: relative;
+}
+.db-notif-btn:hover { background: rgba(255,255,255,0.08); }
+.db-notif-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #05050a; }
+
+.db-page { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 80px; }
+.db-page.active { display: block; }
+
+.db-welcome {
+  border-radius: 20px; padding: 28px 32px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+.db-welcome.student { background: linear-gradient(135deg,rgba(29,78,216,0.25),rgba(96,165,250,0.1)); border: 1px solid rgba(96,165,250,0.25); }
+.db-welcome.teacher { background: linear-gradient(135deg,rgba(180,83,9,0.25),rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.25); }
+.db-welcome::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; filter:blur(60px); pointer-events:none; }
+.db-welcome.student::before { background:rgba(96,165,250,0.15); }
+.db-welcome.teacher::before { background:rgba(245,158,11,0.15); }
+.db-welcome-text h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:6px; color:#f0f0ff; }
+.db-welcome-text p { font-size:13.5px; color:#9ca3af; line-height:1.6; }
+.db-welcome-emoji { font-size:48px; line-height:1; }
+
+.db-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+.db-stat-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:18px 20px; transition:transform 0.2s, border-color 0.2s; }
+.db-stat-card:hover { transform:translateY(-3px); border-color:rgba(139,92,246,0.25); }
+.db-stat-label { font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:7px; letter-spacing:0.3px; }
+.db-stat-value { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; letter-spacing:-1px; }
+.db-stat-value.blue { color:#60a5fa; text-shadow:0 0 20px rgba(96,165,250,0.3); }
+.db-stat-value.green { color:#10b981; text-shadow:0 0 20px rgba(16,185,129,0.3); }
+.db-stat-value.orange { color:#f59e0b; text-shadow:0 0 20px rgba(245,158,11,0.3); }
+.db-stat-value.purple { color:#a78bfa; text-shadow:0 0 20px rgba(167,139,250,0.3); }
+.db-stat-value.red { color:#f87171; text-shadow:0 0 20px rgba(248,113,113,0.3); }
+.db-stat-sub { font-size:11px; color:#6b7280; margin-top:3px; }
+
+.db-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.db-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:18px; }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+.db-card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; color:#f0f0ff; display:flex; align-items:center; gap:8px; }
+.db-card-title span.count { margin-left:auto; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:#6b7280; }
+
+.db-list-item { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.db-list-item:last-child { border-bottom:none; padding-bottom:0; }
+.db-list-icon { width:40px; height:40px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; background:rgba(255,255,255,0.05); }
+.db-list-info { flex:1; min-width:0; }
+.db-list-name { font-size:13px; font-weight:600; color:#f0f0ff; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.db-list-meta { font-size:11.5px; color:#6b7280; }
+.db-list-action { font-size:11.5px; font-weight:600; color:#a78bfa; padding:4px 10px; border-radius:7px; border:1px solid rgba(167,139,250,0.25); background:rgba(167,139,250,0.07); cursor:pointer; white-space:nowrap; flex-shrink:0; transition:all 0.2s; }
+.db-list-action:hover { background:rgba(167,139,250,0.15); }
+.db-list-action.blue { color:#60a5fa; border-color:rgba(96,165,250,0.25); background:rgba(96,165,250,0.07); }
+.db-list-action.orange { color:#f59e0b; border-color:rgba(245,158,11,0.25); background:rgba(245,158,11,0.07); }
+.db-list-action.green { color:#10b981; border-color:rgba(16,185,129,0.25); background:rgba(16,185,129,0.07); }
+
+.db-progress-bar { height:4px; background:rgba(255,255,255,0.07); border-radius:999px; margin-top:5px; overflow:hidden; }
+.db-progress-fill { height:100%; border-radius:999px; transition:width 1.2s ease; }
+.fill-blue { background:linear-gradient(90deg,#1d4ed8,#60a5fa); }
+.fill-green { background:linear-gradient(90deg,#059669,#10b981); }
+.fill-purple { background:linear-gradient(90deg,#6d28d9,#8b5cf6); }
+.fill-orange { background:linear-gradient(90deg,#b45309,#f59e0b); }
+
+.db-activity-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.db-activity-item:last-child { border-bottom:none; }
+.db-activity-dot { width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+.db-activity-text { font-size:13px; color:#9ca3af; line-height:1.5; }
+.db-activity-time { font-size:11px; color:#4b5563; margin-top:2px; }
+
+.ann-item { padding:14px 16px; border-radius:13px; margin-bottom:10px; border-left:3px solid; position:relative; }
+.ann-item.red { background:rgba(239,68,68,0.07); border-color:#ef4444; }
+.ann-item.yellow { background:rgba(245,158,11,0.07); border-color:#f59e0b; }
+.ann-item.blue { background:rgba(59,130,246,0.07); border-color:#3b82f6; }
+.ann-title { font-size:13.5px; font-weight:700; color:#f0f0ff; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+.ann-body { font-size:12.5px; color:#9ca3af; line-height:1.55; }
+.ann-time { font-size:11px; color:#6b7280; margin-top:6px; }
+.ann-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; }
+.ann-badge.red { background:rgba(239,68,68,0.2); color:#f87171; }
+.ann-badge.yellow { background:rgba(245,158,11,0.2); color:#fcd34d; }
+.ann-badge.blue { background:rgba(59,130,246,0.2); color:#93c5fd; }
+
+.doubt-item { padding:14px; border-radius:13px; margin-bottom:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:border-color 0.2s; }
+.doubt-item:hover { border-color:rgba(139,92,246,0.25); }
+.doubt-q { font-size:13.5px; font-weight:600; color:#f0f0ff; margin-bottom:5px; }
+.doubt-meta { font-size:11.5px; color:#6b7280; display:flex; gap:14px; flex-wrap:wrap; }
+.doubt-status { font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; }
+.doubt-status.pending { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.doubt-status.answered { background:rgba(16,185,129,0.15); color:#10b981; }
+.doubt-status.review { background:rgba(139,92,246,0.15); color:#a78bfa; }
+
+.avail-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.avail-item:last-child { border-bottom:none; }
+.avail-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+.avail-dot.green { background:#22c55e; box-shadow:0 0 8px #22c55e; }
+.avail-dot.yellow { background:#f59e0b; box-shadow:0 0 8px #f59e0b; }
+.avail-dot.red { background:#ef4444; box-shadow:0 0 8px #ef4444; }
+.avail-name { font-size:13px; font-weight:600; color:#f0f0ff; flex:1; }
+.avail-status-text { font-size:12px; color:#9ca3af; }
+
+.schedule-row { display:flex; gap:10px; margin-bottom:8px; }
+.schedule-time { font-size:12px; color:#6b7280; width:70px; flex-shrink:0; padding-top:3px; }
+.schedule-block { flex:1; padding:10px 14px; border-radius:11px; font-size:13px; font-weight:600; }
+.schedule-block.blue { background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.2); color:#93c5fd; }
+.schedule-block.green { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); color:#6ee7b7; }
+.schedule-block.purple { background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.2); color:#c4b5fd; }
+.schedule-block.orange { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.2); color:#fcd34d; }
+.schedule-sub { font-size:11px; font-weight:400; opacity:0.7; margin-top:2px; }
+
+.note-item { display:flex; align-items:center; gap:12px; padding:11px; border-radius:13px; border:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02); margin-bottom:9px; transition:all 0.2s; }
+.note-item:hover { background:rgba(255,255,255,0.04); border-color:rgba(139,92,246,0.2); }
+.note-type { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.note-info { flex:1; min-width:0; }
+.note-name { font-size:13px; font-weight:600; color:#f0f0ff; margin-bottom:2px; }
+.note-meta { font-size:11.5px; color:#6b7280; }
+.note-actions { display:flex; gap:7px; flex-shrink:0; }
+.note-btn { padding:5px 11px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid; transition:all 0.2s; }
+.note-btn.dl { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.25); color:#10b981; }
+.note-btn.dl:hover { background:rgba(16,185,129,0.18); }
+.note-btn.read { background:rgba(96,165,250,0.08); border-color:rgba(96,165,250,0.25); color:#60a5fa; }
+.note-btn.read:hover { background:rgba(96,165,250,0.18); }
+
+.att-table { width:100%; border-collapse:separate; border-spacing:0; }
+.att-table th { font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; padding:8px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.07); }
+.att-table td { font-size:13px; color:#d1d5db; padding:11px 12px; border-bottom:1px solid rgba(255,255,255,0.05); }
+.att-table tr:last-child td { border-bottom:none; }
+.att-tag { display:inline-flex; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; }
+.att-tag.present { background:rgba(16,185,129,0.15); color:#10b981; }
+.att-tag.absent { background:rgba(239,68,68,0.15); color:#f87171; }
+.att-tag.late { background:rgba(245,158,11,0.15); color:#f59e0b; }
+
+.profile-header { display:flex; align-items:center; gap:20px; padding:24px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; margin-bottom:18px; }
+.profile-avatar-lg { width:70px; height:70px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:white; }
+.profile-avatar-lg.student { background:linear-gradient(135deg,#1d4ed8,#60a5fa); box-shadow:0 0 30px rgba(96,165,250,0.3); }
+.profile-avatar-lg.teacher { background:linear-gradient(135deg,#b45309,#f59e0b); box-shadow:0 0 30px rgba(245,158,11,0.3); }
+.profile-info h3 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; margin-bottom:4px; }
+.profile-info p { font-size:13px; color:#9ca3af; }
+.profile-role-tag { margin-top:8px; display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:600; }
+.profile-role-tag.student { background:rgba(96,165,250,0.12); border:1px solid rgba(96,165,250,0.3); color:#60a5fa; }
+.profile-role-tag.teacher { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); color:#f59e0b; }
+.settings-group { margin-bottom:18px; }
+.settings-label { font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:10px; }
+.settings-item { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); margin-bottom:8px; }
+.settings-item-left { font-size:13.5px; color:#f0f0ff; display:flex; align-items:center; gap:10px; }
+.settings-item-sub { font-size:12px; color:#6b7280; margin-top:2px; }
+.toggle-btn { width:42px; height:24px; border-radius:999px; border:none; cursor:pointer; position:relative; transition:background 0.3s; flex-shrink:0; }
+.toggle-btn.on { background:#8b5cf6; }
+.toggle-btn.off { background:#374151; }
+.toggle-btn::after { content:''; position:absolute; top:3px; width:18px; height:18px; border-radius:50%; background:white; transition:left 0.3s; }
+.toggle-btn.on::after { left:21px; }
+.toggle-btn.off::after { left:3px; }
+
+.db-chat-btn { position:fixed; bottom:28px; right:28px; width:54px; height:54px; background:linear-gradient(135deg,#6d28d9,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; box-shadow:0 0 0 0 rgba(139,92,246,0.4); animation:chat-pulse 3s ease infinite; transition:transform 0.2s; border:none; }
+.db-chat-btn:hover { transform:scale(1.1); }
+.db-chat-online { position:absolute; top:2px; right:2px; width:14px; height:14px; background:#22c55e; border-radius:50%; border:2px solid #05050a; }
+
+.page-header { margin-bottom:22px; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; letter-spacing:-0.3px; margin-bottom:4px; }
+.page-header p { font-size:13px; color:#9ca3af; }
+
+.db-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:10px; padding:10px 13px; color:#f0f0ff; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color 0.25s, box-shadow 0.25s; margin-bottom:12px; }
+.db-input::placeholder { color:#6b7280; }
+.db-input:focus { border-color:rgba(139,92,246,0.5); box-shadow:0 0 0 3px rgba(139,92,246,0.1); }
+.db-btn-sm { padding:9px 18px; border-radius:9px; border:none; background:linear-gradient(135deg,#7c3aed,#8b5cf6); color:white; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
+.db-btn-sm:hover { box-shadow:0 4px 16px rgba(139,92,246,0.4); transform:translateY(-1px); }
+.db-btn-sm.orange { background:linear-gradient(135deg,#b45309,#f59e0b); }
+.db-btn-sm.blue { background:linear-gradient(135deg,#1d4ed8,#3b82f6); }
+.db-btn-sm.red { background:linear-gradient(135deg,#991b1b,#ef4444); }
+.db-btn-sm.ghost { background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9ca3af; }
+.db-btn-sm.ghost:hover { background:rgba(255,255,255,0.05); }
+
+.receipt-bar { height:6px; border-radius:999px; background:rgba(255,255,255,0.07); overflow:hidden; margin-top:6px; }
+.receipt-fill { height:100%; background:linear-gradient(90deg,#10b981,#34d399); border-radius:999px; }
+
+.session-card { padding:16px; border-radius:14px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03); margin-bottom:10px; display:flex; gap:14px; align-items:center; }
+.session-avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#4f1d96,#8b5cf6); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:white; flex-shrink:0; }
+.session-info { flex:1; }
+.session-name { font-size:14px; font-weight:700; color:#f0f0ff; margin-bottom:3px; }
+.session-time { font-size:12px; color:#9ca3af; }
+.session-badge { font-size:11px; font-weight:600; padding:4px 10px; border-radius:999px; background:rgba(16,185,129,0.15); color:#10b981; }
+
+@media (max-width:768px) {
+  .db-sidebar { width:60px; }
+  .db-sidebar-logo span, .db-nav-item span:not(.db-nav-icon), .db-nav-section, .db-user-card, .btn-logout span { display:none; }
+  .db-stats { grid-template-columns:1fr 1fr; }
+  .db-grid2, .db-grid3 { grid-template-columns:1fr; }
+  .db-welcome { flex-direction:column; }
+  .db-page { padding:20px 16px 80px; }
+  .db-nav-item { padding:10px; justify-content:center; margin:2px 6px; }
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo">
+    <div class="logo-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)" stroke="rgba(255,255,255,0.3)" stroke-width="0.3"/>
+        <path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <circle cx="20" cy="7" r="1.2" fill="white" opacity="0.9"/>
+        <line x1="20" y1="8.2" x2="20" y2="13" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M17 13.5l1 2.5h4l-2.5 1.5" stroke="rgba(255,255,255,0.6)" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="7" cy="4.5" r="0.5" fill="rgba(255,255,255,0.6)"/>
+        <circle cx="15" cy="3.8" r="0.4" fill="rgba(255,255,255,0.5)"/>
+      </svg>
+    </div>
+    Edu-Net
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#faq">FAQs</a></li>
+  </ul>
+  <button class="btn-primary" onclick="openModal('login')">Login / Sign Up</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="hero-eyebrow">
+    <div class="eyebrow-dot"></div>
+    Trusted by students worldwide
+  </div>
+  <h1>Master New Skills with<br>
+    <span class="line2">World-Class Education</span>
+  </h1>
+  <p class="hero-desc">
+    Learn from experts, clear your doubts, and advance your career
+    with our interactive online platform. Start your journey today.
+  </p>
+  <div class="hero-cta">
+    <a href="#" class="btn-primary">Get Started</a>
+    <a href="#features" class="btn-ghost">Explore Features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num blue" data-target="500">0</span>
+      <div class="stat-label">Expert Instructors</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num green" data-target="100000">0</span>
+      <div class="stat-label">Active Students</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num orange" data-target="95">0</span>
+      <div class="stat-label">Success Rate</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features-section" id="features">
+  <div class="section-wrap">
+    <div class="text-center reveal">
+      <div class="section-badge">✦ Features</div>
+      <div class="section-title">Why Choose Edu-Net?</div>
+      <p class="section-sub">Everything you need to succeed in your learning journey, all in one platform</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal" style="transition-delay:0.05s">
+        <div class="feature-icon-wrap fi-blue">👥</div>
+        <h3>Expert Instructors</h3>
+        <p>Learn from industry professionals with years of real-world experience and proven track records.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.1s">
+        <div class="feature-icon-wrap fi-purple">⚡</div>
+        <h3>Interactive Learning</h3>
+        <p>Hands-on projects, quizzes, and coding challenges to reinforce your skills and build confidence.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.15s">
+        <div class="feature-icon-wrap fi-green">🛡️</div>
+        <h3>Lifetime Access</h3>
+        <p>Once enrolled, access your courses forever with regular content updates at no extra charge.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.2s">
+        <div class="feature-icon-wrap fi-orange">🎖️</div>
+        <h3>Live Session</h3>
+        <p>Whenever you have a Doubt just book the session instantly and clear it with a real instructor.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.25s">
+        <div class="feature-icon-wrap fi-pink">🌐</div>
+        <h3>Learn Anywhere</h3>
+        <p>Access courses on any device, anytime, anywhere in the world — online or offline mode.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.3s">
+        <div class="feature-icon-wrap fi-cyan">💬</div>
+        <h3>Community Support</h3>
+        <p>Connect with fellow learners, join study groups, and get direct help from expert instructors.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="hiw-section" id="about">
+  <div class="hiw-inner">
+    <div class="text-center reveal">
+      <div class="section-badge">✦ Process</div>
+      <div class="section-title">How It Works</div>
+      <p class="section-sub">Start learning in just three simple steps and transform your career today</p>
+    </div>
+    <div class="hiw-steps">
+      <div class="hiw-step reveal" style="transition-delay:0.05s">
+        <div class="hiw-icon-wrap">🎯<div class="hiw-badge">1</div></div>
+        <h3>Choose Your Course</h3>
+        <p>Browse our extensive library and select your course.</p>
+      </div>
+      <div class="hiw-step reveal" style="transition-delay:0.15s">
+        <div class="hiw-icon-wrap">🕐<div class="hiw-badge">2</div></div>
+        <h3>Learn at Your Pace</h3>
+        <p>Access engaging video lessons, projects, and resources anytime — on your own schedule.</p>
+      </div>
+      <div class="hiw-step reveal" style="transition-delay:0.25s">
+        <div class="hiw-icon-wrap">🏆<div class="hiw-badge">3</div></div>
+        <h3>Ask your doubts directly</h3>
+        <p>Ask your doubts directly from your desired faculty and have access to their personal notes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div id="testimonials">
+  <div class="section-wrap">
+    <div class="text-center reveal">
+      <div class="section-badge">✦ Stories</div>
+      <div class="section-title">Student Success Stories</div>
+      <p class="section-sub">Hear from thousands of students who transformed their careers with Edu-Net</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="t-card reveal" style="transition-delay:0.05s">
+        <span class="quote-mark">"</span>
+        <p>Edu-Net helped me transition from a non-tech background to landing my dream job at Google. The courses are practical and the instructors are genuinely amazing!</p>
+        <div class="t-author">
+          <div class="t-avatar">JM</div>
+          <div><div class="t-name">John Martinez</div><div class="t-role">Software Engineer at Google</div></div>
+        </div>
+        <div class="t-stars">★★★★★</div>
+      </div>
+      <div class="t-card reveal" style="transition-delay:0.12s">
+        <span class="quote-mark">"</span>
+        <p>The UI/UX course was a game-changer for my career. I went from freelancing to working at Apple within 6 months of completing the program.</p>
+        <div class="t-author">
+          <div class="t-avatar">EC</div>
+          <div><div class="t-name">Emily Chen</div><div class="t-role">UX Designer at Apple</div></div>
+        </div>
+        <div class="t-stars">★★★★★</div>
+      </div>
+      <div class="t-card reveal" style="transition-delay:0.2s">
+        <span class="quote-mark">"</span>
+        <p>The data science program gave me the skills I needed to break into the field. Now I'm working on cutting-edge AI projects at Amazon. Highly recommend!</p>
+        <div class="t-author">
+          <div class="t-avatar">DP</div>
+          <div><div class="t-name">David Park</div><div class="t-role">Data Scientist at Amazon</div></div>
+        </div>
+        <div class="t-stars">★★★★★</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section" id="faq">
+  <div class="section-wrap">
+    <div class="text-center reveal">
+      <div class="section-badge">✦ FAQ</div>
+      <div class="section-title">Frequently Asked Questions</div>
+      <p class="section-sub">Everything you need to know about Edu-Net</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How do I get started with Edu-Net?
+          <span class="faq-chevron">&#8964;</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Simply create a free account using your Email id and enroll in your course that matches your learning goals. You can start learning immediately after enrollment — no credit card required.</div></div>
+      </div>
+      <div class="faq-item reveal" style="transition-delay:0.05s">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I access on mobile devices?
+          <span class="faq-chevron">&#8964;</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes! Edu-Net is fully responsive and works seamlessly on smartphones, tablets, and desktops. Our dedicated mobile app also allows offline downloads so you can learn without internet.</div></div>
+      </div>
+      <div class="faq-item reveal" style="transition-delay:0.1s">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I get a certificate after completing a course?
+          <span class="faq-chevron">&#8964;</span>
+        </button>
+        <!-- ✅ FIX 1: Corrected the contradictory / poorly worded answer -->
+        <div class="faq-a"><div class="faq-a-inner">No, we do not offer certificates currently. However, our services are completely free of cost — no credit card required.</div></div>
+      </div>
+      <div class="faq-item open reveal" style="transition-delay:0.15s">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is your privacy policy?
+          <span class="faq-chevron">&#8964;</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">We offer discrete and private account generation using your personal or institute Email id for better privacy and security.</div></div>
+      </div>
+      <div class="faq-item reveal" style="transition-delay:0.2s">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I cancel my subscription anytime?
+          <span class="faq-chevron">&#8964;</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Absolutely. Cancel anytime from your account settings.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-inner reveal">
+    <div class="section-badge" style="margin:0 auto 20px">✦ Get Started</div>
+    <h2>Ready to Start Your<br>Learning Journey?</h2>
+    <p>Join thousands of students already learning on Edu-Net.<br>Start your free trial today — no credit card required.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="#" class="btn-primary" style="padding:13px 28px;font-size:15px">Journey begins</a>
+      <a href="#" class="btn-ghost" style="padding:13px 28px;font-size:15px">View All Courses</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo nav-logo" style="display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:18px;text-decoration:none;color:var(--text)">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)" stroke="rgba(255,255,255,0.3)" stroke-width="0.3"/>
+            <path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <circle cx="20" cy="7" r="1.2" fill="white" opacity="0.9"/>
+            <line x1="20" y1="8.2" x2="20" y2="13" stroke="rgba(255,255,255,0.7)" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M17 13.5l1 2.5h4l-2.5 1.5" stroke="rgba(255,255,255,0.6)" stroke-width="0.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="7" cy="4.5" r="0.5" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="15" cy="3.8" r="0.4" fill="rgba(255,255,255,0.5)"/>
+          </svg>
+        </div>
+        Edu-Net
+      </div>
+      <p class="footer-desc">Empowering learners worldwide with quality education and practical skills that matter.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Browse Courses</a></li>
+        <li><a href="#">Become Instructor</a></li>
+        <li><a href="#">For Business</a></li>
+        <li><a href="#">Mobile App</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Community</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Press Kit</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Edu-Net. All rights reserved.</span>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal" onclick="handleOverlayClick(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div class="modal-logo">
+      <div class="logo-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)"/>
+          <path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      Edu-Net
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="auth-panel active" id="panelLogin">
+      <div class="role-section-title">Who are you?</div>
+      <div class="role-selector">
+        <div class="role-card student selected" id="loginRoleStudent" onclick="selectLoginRole('student')">
+          <span class="role-badge">&#x2713;</span>
+          <span class="role-icon">&#x1F393;</span>
+          <div class="role-label">Student</div>
+          <div class="role-desc">Learn Courses</div>
+        </div>
+        <div class="role-card teacher" id="loginRoleTeacher" onclick="selectLoginRole('teacher')">
+          <span class="role-badge">&#x2713;</span>
+          <span class="role-icon">&#x1F4DA;</span>
+          <div class="role-label">Teacher</div>
+          <div class="role-desc">Teach Courses</div>
+        </div>
+      </div>
+      <div id="loginStudentForm">
+        <div class="role-tag student">&#x1F393; Student Login</div>
+        <div class="auth-title">Welcome back!</div>
+        <div class="auth-sub">Continue your learning journey.</div>
+        <div class="form-group"><label>Student Email</label><input type="email" class="student-focus" placeholder="your@email.com" /></div>
+        <div class="form-group"><label>Password</label><input type="password" class="student-focus" placeholder="Enter password" /></div>
+        <div class="form-forgot"><a href="#">Forgot password?</a></div>
+        <button class="btn-auth student-btn">Student Login &rarr;</button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button>
+      </div>
+      <div id="loginTeacherForm" style="display:none">
+        <div class="role-tag teacher">&#x1F4DA; Teacher Login</div>
+        <div class="auth-title">Welcome back, Teacher!</div>
+        <div class="auth-sub">Keep inspiring your students.</div>
+        <div class="form-group"><label>Teacher Email / Employee ID</label><input type="email" class="teacher-focus" placeholder="teacher@school.com" /></div>
+        <div class="form-group"><label>Password</label><input type="password" class="teacher-focus" placeholder="Enter password" /></div>
+        <div class="form-forgot"><a href="#">Forgot password?</a></div>
+        <button class="btn-auth teacher-btn">Teacher Login &rarr;</button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Continue with Google</button>
+      </div>
+      <div class="auth-switch">Don't have an account? <a onclick="switchTab('signup')">Sign Up</a></div>
+    </div>
+
+    <!-- SIGNUP PANEL -->
+    <div class="auth-panel" id="panelSignup">
+      <div class="role-section-title">What are you signing up as?</div>
+      <div class="role-selector">
+        <div class="role-card student selected" id="signupRoleStudent" onclick="selectSignupRole('student')">
+          <span class="role-badge">&#x2713;</span>
+          <span class="role-icon">&#x1F393;</span>
+          <div class="role-label">Student</div>
+          <div class="role-desc">Learn Courses</div>
+        </div>
+        <div class="role-card teacher" id="signupRoleTeacher" onclick="selectSignupRole('teacher')">
+          <span class="role-badge">&#x2713;</span>
+          <span class="role-icon">&#x1F4DA;</span>
+          <div class="role-label">Teacher</div>
+          <div class="role-desc">Teach Courses</div>
+        </div>
+      </div>
+      <div id="signupStudentForm">
+        <div class="role-tag student">&#x1F393; Student Registration</div>
+        <div class="auth-title">Join as Student &#x2728;</div>
+        <div class="auth-sub">Register for free and explore thousands of courses.</div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" class="student-focus" placeholder="First name" /></div>
+          <div class="form-group"><label>Last Name</label><input type="text" class="student-focus" placeholder="Last name" /></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" class="student-focus" placeholder="your@email.com" /></div>
+        <div class="form-group"><label>Class / Grade</label><select class="student-focus"><option value="" disabled selected>Select your class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option><option>Undergraduate</option><option>Postgraduate</option><option>Other</option></select></div>
+        <div class="form-group"><label>Password</label><input type="password" class="student-focus" placeholder="At least 8 characters" /></div>
+        <button class="btn-auth student-btn">Create Student Account &rarr;</button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Sign up with Google</button>
+        <div class="terms-text">By registering you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+      </div>
+      <div id="signupTeacherForm" style="display:none">
+        <div class="role-tag teacher">&#x1F4DA; Teacher Registration</div>
+        <div class="auth-title">Join as Teacher &#x1F3AF;</div>
+        <div class="auth-sub">Share your knowledge and transform millions of students' lives.</div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" class="teacher-focus" placeholder="First name" /></div>
+          <div class="form-group"><label>Last Name</label><input type="text" class="teacher-focus" placeholder="Last name" /></div>
+        </div>
+        <div class="form-group"><label>Official Email</label><input type="email" class="teacher-focus" placeholder="teacher@school.com" /></div>
+        <div class="form-group"><label>School / Institute Name</label><input type="text" class="teacher-focus" placeholder="e.g. Delhi Public School" /></div>
+        <div class="form-group"><label>Teaching Experience</label><select class="teacher-focus"><option value="" disabled selected>Select experience</option><option>0-1 year (Fresher)</option><option>1-3 years</option><option>3-5 years</option><option>5-10 years</option><option>10+ years</option></select></div>
+        <div class="form-group">
+          <label>Which subjects do you teach?</label>
+          <div class="subject-chips">
+            <span class="chip" onclick="toggleChip(this)">Mathematics</span>
+            <span class="chip" onclick="toggleChip(this)">Science</span>
+            <span class="chip" onclick="toggleChip(this)">English</span>
+            <span class="chip" onclick="toggleChip(this)">History</span>
+            <span class="chip" onclick="toggleChip(this)">Physics</span>
+            <span class="chip" onclick="toggleChip(this)">Chemistry</span>
+            <span class="chip" onclick="toggleChip(this)">Biology</span>
+            <span class="chip" onclick="toggleChip(this)">Computer</span>
+            <span class="chip" onclick="toggleChip(this)">Hindi</span>
+            <span class="chip" onclick="toggleChip(this)">Other</span>
+          </div>
+        </div>
+        <div class="form-group"><label>Password</label><input type="password" class="teacher-focus" placeholder="At least 8 characters" /></div>
+        <button class="btn-auth teacher-btn">Create Teacher Account &rarr;</button>
+        <div class="auth-divider">or</div>
+        <button class="btn-google"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Sign up with Google</button>
+        <div class="terms-text">By registering you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+      </div>
+      <div class="auth-switch">Already have an account? <a onclick="switchTab('login')">Login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CHATBOT PANEL -->
+<div class="main-chat-overlay" id="mainChatOverlay">
+  <div class="main-chat-header">
+    <div class="main-chat-avatar">🤖</div>
+    <div class="main-chat-info">
+      <div class="main-chat-name">Edu-Net AI Assistant</div>
+      <div class="main-chat-status">● Online — Always available</div>
+    </div>
+    <button class="main-chat-close" onclick="toggleMainChat()">✕</button>
+  </div>
+  <div class="main-chat-msgs" id="mainChatMsgs">
+    <div style="display:flex;gap:9px;align-items:flex-start">
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🤖</div>
+      <div>
+        <div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 14px 14px 14px;padding:10px 14px;max-width:280px">
+          <div style="font-size:13px;color:#f0f0ff;line-height:1.6">👋 Hi! I'm your <strong>Edu-Net AI</strong>.<br><br>📚 Explain any concept<br>❓ Solve your doubts<br>📅 Help with study plans<br><br>What would you like to learn?</div>
+        </div>
+        <div style="font-size:10.5px;color:#4b5563;margin-top:3px;padding-left:2px">Just now</div>
+      </div>
+    </div>
+  </div>
+  <div class="main-chat-suggestions" id="mainChatSugg">
+    <button class="main-chat-sugg-btn" onclick="mainSendSugg(this)">Newton's laws</button>
+    <button class="main-chat-sugg-btn" onclick="mainSendSugg(this)">Calculus formulas</button>
+    <button class="main-chat-sugg-btn" onclick="mainSendSugg(this)">Python basics</button>
+    <button class="main-chat-sugg-btn" onclick="mainSendSugg(this)">Exam preparation tips</button>
+  </div>
+  <div class="main-chat-input-row">
+    <textarea class="main-chat-input" id="mainChatInput" rows="1" placeholder="Ask anything..." onkeydown="mainChatKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="main-chat-send" onclick="mainSendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- CHAT BUTTON -->
+<div class="chat-btn" onclick="toggleMainChat()" id="mainChatBtn">
+  <svg width="30" height="30" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="8" width="20" height="14" rx="4" fill="white" opacity="0.95"/>
+    <circle cx="10" cy="15" r="2" fill="#7c3aed"/>
+    <circle cx="18" cy="15" r="2" fill="#7c3aed"/>
+    <rect x="10" y="19" width="8" height="1.5" rx="0.75" fill="#7c3aed" opacity="0.6"/>
+    <rect x="11.5" y="4" width="5" height="4" rx="1.5" fill="white" opacity="0.85"/>
+    <circle cx="14" cy="8" r="1" fill="white"/>
+    <rect x="1.5" y="11.5" width="2.5" height="5" rx="1.25" fill="white" opacity="0.75"/>
+    <rect x="24" y="11.5" width="2.5" height="5" rx="1.25" fill="white" opacity="0.75"/>
+  </svg>
+  <div class="chat-online"></div>
+</div>
+
+<script>
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 20); });
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+function animateCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    const displayTarget = target >= 1000 ? target / 1000 : target;
+    let current = 0;
+    const step = displayTarget / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, displayTarget);
+      if (el.classList.contains('orange')) el.textContent = Math.floor(current) + '%';
+      else if (target >= 1000) el.textContent = Math.floor(current) + 'K+';
+      else el.textContent = Math.floor(current) + '+';
+      if (current >= displayTarget) clearInterval(timer);
+    }, 20);
+  });
+}
+const statsObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) { animateCounters(); statsObserver.disconnect(); } }, { threshold: 0.5 });
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObserver.observe(statsEl);
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => { const id = a.getAttribute('href').slice(1); const el = document.getElementById(id); if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); } });
+});
+
+function openModal(tab) { document.getElementById('authModal').classList.add('active'); document.body.style.overflow = 'hidden'; if (tab) switchTab(tab); }
+function closeModal() { document.getElementById('authModal').classList.remove('active'); document.body.style.overflow = ''; }
+function handleOverlayClick(e) { if (e.target === document.getElementById('authModal')) closeModal(); }
+function switchTab(tab) {
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  document.getElementById('panelLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('panelSignup').classList.toggle('active', tab === 'signup');
+}
+function selectLoginRole(role) {
+  ['student','teacher'].forEach(r => {
+    const card = document.getElementById('loginRole' + r.charAt(0).toUpperCase() + r.slice(1));
+    card.className = 'role-card ' + r + (r === role ? ' selected' : '');
+  });
+  document.getElementById('loginStudentForm').style.display = role === 'student' ? 'block' : 'none';
+  document.getElementById('loginTeacherForm').style.display = role === 'teacher' ? 'block' : 'none';
+}
+function selectSignupRole(role) {
+  ['student','teacher'].forEach(r => {
+    const card = document.getElementById('signupRole' + r.charAt(0).toUpperCase() + r.slice(1));
+    card.className = 'role-card ' + r + (r === role ? ' selected' : '');
+  });
+  document.getElementById('signupStudentForm').style.display = role === 'student' ? 'block' : 'none';
+  document.getElementById('signupTeacherForm').style.display = role === 'teacher' ? 'block' : 'none';
+}
+function toggleChip(el) { el.classList.toggle('active'); }
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+function toName(email) {
+  var parts = email.split('@')[0].replace(/[._-]/g,' ').split(' ');
+  return parts.map(function(p){ return p ? p[0].toUpperCase() + p.slice(1) : ''; }).join(' ').trim();
+}
+function getFieldVal(form, type) {
+  var el = form.querySelector('input[type="' + type + '"]');
+  return el ? el.value.trim() : '';
+}
+
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn-auth');
+  if (!btn) return;
+  var f1 = document.getElementById('loginStudentForm');
+  if (f1 && f1.contains(btn)) {
+    var email = getFieldVal(f1, 'email'); var pass = getFieldVal(f1, 'password');
+    if (!email || !pass) { alert('Please enter email and password.'); return; }
+    showDashboard({ role: 'student' }, toName(email)); return;
+  }
+  var f2 = document.getElementById('loginTeacherForm');
+  if (f2 && f2.contains(btn)) {
+    var email = getFieldVal(f2, 'email'); var pass = getFieldVal(f2, 'password');
+    if (!email || !pass) { alert('Please enter email and password.'); return; }
+    showDashboard({ role: 'teacher' }, 'Prof. ' + toName(email)); return;
+  }
+  var f3 = document.getElementById('signupStudentForm');
+  if (f3 && f3.contains(btn)) {
+    var txts = f3.querySelectorAll('input[type="text"]');
+    var first = txts[0] ? txts[0].value.trim() : '';
+    var last  = txts[1] ? txts[1].value.trim() : '';
+    var email = getFieldVal(f3, 'email'); var pass = getFieldVal(f3, 'password');
+    if (!first || !email || !pass) { alert('Please fill all required fields.'); return; }
+    showDashboard({ role: 'student' }, (first + ' ' + last).trim()); return;
+  }
+  var f4 = document.getElementById('signupTeacherForm');
+  if (f4 && f4.contains(btn)) {
+    var txts = f4.querySelectorAll('input[type="text"]');
+    var first = txts[0] ? txts[0].value.trim() : '';
+    var last  = txts[1] ? txts[1].value.trim() : '';
+    var email = getFieldVal(f4, 'email'); var pass = getFieldVal(f4, 'password');
+    if (!first || !email || !pass) { alert('Please fill all required fields.'); return; }
+    showDashboard({ role: 'teacher' }, 'Prof. ' + (first + ' ' + last).trim()); return;
+  }
+});
+
+const STUDENT_NAV = [
+  { id:'overview',      icon:'🏠', label:'Overview' },
+  { id:'notes',         icon:'📝', label:'Notes Library' },
+  { id:'doubts',        icon:'❓', label:'My Doubts', badge:2 },
+  { id:'timetable',     icon:'📅', label:'Timetable' },
+  { id:'sessions',      icon:'🎥', label:'1-to-1 Sessions' },
+  { id:'announcements', icon:'📢', label:'Announcements', badge:3 },
+  { id:'attendance',    icon:'✅', label:'Attendance' },
+  { id:'notifications', icon:'🔔', label:'Notifications', badge:5 },
+  { id:'chatbot',       icon:'🤖', label:'AI Chatbot' },
+  { id:'ebooks',        icon:'📖', label:'E-Books' },
+  { id:'profile',       icon:'⚙️', label:'Settings' },
+];
+const TEACHER_NAV = [
+  { id:'t-overview',      icon:'🏠', label:'Overview' },
+  { id:'t-doubts',        icon:'❓', label:'Doubt Queue', badge:3 },
+  { id:'t-notes',         icon:'📝', label:'Notes Manager' },
+  { id:'t-announcements', icon:'📢', label:'Announcements' },
+  { id:'t-schedule',      icon:'📅', label:'Schedule Manager' },
+  { id:'t-sessions',      icon:'🎥', label:'1-to-1 Sessions' },
+  { id:'t-profile',       icon:'⚙️', label:'Settings' },
+];
+
+let currentRole = 'student';
+
+function buildNav(role) {
+  const nav = role === 'student' ? STUDENT_NAV : TEACHER_NAV;
+  const colorClass = role === 'student' ? 'student-nav' : 'teacher-nav';
+  document.getElementById('dbNavItems').innerHTML = nav.map((item,i) => `
+    <div class="db-nav-item ${i===0?'active '+colorClass:''}" id="nav-${item.id}" onclick="navigateTo('${item.id}')">
+      <span class="db-nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+      ${item.badge ? `<span class="db-nav-badge">${item.badge}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+function navigateTo(pageId) {
+  document.querySelectorAll('.db-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.db-nav-item').forEach(n => n.classList.remove('active','student-nav','teacher-nav'));
+  const page = document.getElementById('page-' + pageId);
+  if (page) page.classList.add('active');
+  const navItem = document.getElementById('nav-' + pageId);
+  if (navItem) {
+    navItem.classList.add('active', currentRole + '-nav');
+    const badge = navItem.querySelector('.db-nav-badge');
+    if (badge) badge.remove();
+  }
+  const nav = currentRole === 'student' ? STUDENT_NAV : TEACHER_NAV;
+  const item = nav.find(n => n.id === pageId);
+  if (item) document.getElementById('dbPageTitle').textContent = item.label;
+}
+
+function showDashboard(userData, name) {
+  currentRole = userData.role;
+  closeModal();
+  const initials = name.replace('Prof. ','').split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const av = document.getElementById('dbAvatar');
+  av.textContent = initials; av.className = 'db-avatar ' + userData.role;
+  document.getElementById('dbUserName').textContent = name;
+  document.getElementById('dbUserRole').textContent = userData.role === 'student' ? 'Student' : 'Teacher';
+  buildNav(userData.role);
+  const firstName = name.replace('Prof. ','').split(' ')[0];
+  if (userData.role === 'student') {
+    document.getElementById('dbWelcomeTitle').textContent = 'Welcome back, ' + firstName + '! 👋';
+    document.getElementById('dbWelcomeBanner').className = 'db-welcome student';
+  } else {
+    document.getElementById('dbTeacherWelcomeTitle').textContent = 'Welcome back, Prof. ' + firstName + '! 👋';
+  }
+  document.getElementById('profileAvatarLg').textContent = initials;
+  document.getElementById('profileAvatarLg').className = 'profile-avatar-lg ' + userData.role;
+  document.getElementById('profileNameLg').textContent = name;
+  document.getElementById('settingsEmail').textContent = name.toLowerCase().replace('prof. ','').split(' ').join('') + '@email.com';
+  if (userData.role === 'teacher') {
+    document.getElementById('teacherProfileAvatar').textContent = initials;
+    document.getElementById('teacherProfileName').textContent = name;
+  }
+  document.querySelectorAll('.db-page').forEach(p => p.classList.remove('active'));
+  const firstPage = userData.role === 'student' ? 'overview' : 't-overview';
+  const overviewPage = document.getElementById('page-' + firstPage);
+  if (overviewPage) overviewPage.classList.add('active');
+  if (userData.role === 'student') {
+    document.getElementById('dbStatsRow').innerHTML = `
+      <div class="db-stat-card"><div class="db-stat-label">Courses Enrolled</div><div class="db-stat-value blue">4</div><div class="db-stat-sub">2 in progress</div></div>
+      <div class="db-stat-card"><div class="db-stat-label">Doubts Submitted</div><div class="db-stat-value purple">12</div><div class="db-stat-sub">3 pending reply</div></div>
+      <div class="db-stat-card"><div class="db-stat-label">Attendance</div><div class="db-stat-value green">87%</div><div class="db-stat-sub">Above 75% min</div></div>
+      <div class="db-stat-card"><div class="db-stat-label">Sessions Booked</div><div class="db-stat-value orange">5</div><div class="db-stat-sub">2 upcoming</div></div>`;
+  }
+  setTimeout(() => {
+    document.getElementById('dashboardOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }, 150);
+}
+
+function logout() {
+  const dash = document.getElementById('dashboardOverlay');
+  dash.style.opacity = '0';
+  setTimeout(() => { dash.classList.remove('active'); dash.style.opacity = ''; document.body.style.overflow = ''; window.scrollTo({top:0,behavior:'smooth'}); }, 400);
+}
+
+const BOT_RESPONSES = {
+  newton: "**Newton's Laws of Motion** ⚡\n\n1️⃣ **First Law (Inertia):** An object remains at rest or in uniform motion unless acted upon by an external net force.\n📌 Example: A book on a table stays still until you push it.\n\n2️⃣ **Second Law (F = ma):** Force = Mass × Acceleration\n📌 Example: Pushing a heavy cart needs more force than a light one.\n\n3️⃣ **Third Law (Action-Reaction):** Every action has an equal & opposite reaction.\n📌 Example: When you jump, your feet push the ground down — ground pushes you up!\n\nWant to solve a numerical on this? 😊",
+  motion: "**Equations of Motion** 🚀\n\nFor uniform acceleration:\n\n📐 v = u + at\n📐 s = ut + ½at²\n📐 v² = u² + 2as\n\nWhere:\n• u = initial velocity\n• v = final velocity\n• a = acceleration\n• t = time\n• s = displacement\n\n💡 Tip: Always write down what's given first, then pick the right equation!\n\nWant me to solve a sample problem?",
+  electricity: "**Electricity Basics** ⚡\n\n🔋 **Ohm's Law:** V = IR\n(Voltage = Current × Resistance)\n\n⚡ **Power:** P = VI = I²R = V²/R\n\n🔌 **Series Circuit:**\n• Same current flows through all\n• R_total = R₁ + R₂ + R₃\n\n🔌 **Parallel Circuit:**\n• Same voltage across all\n• 1/R_total = 1/R₁ + 1/R₂\n\n💡 Tip: In series, current is same. In parallel, voltage is same!\n\nAny specific topic — Kirchhoff's laws, capacitors?",
+  force: "**Forces & Their Types** 💪\n\n• **Gravitational Force** — pulls objects towards Earth (g = 9.8 m/s²)\n• **Normal Force** — perpendicular support from surface\n• **Friction** — opposes motion (f = μN)\n• **Tension** — force in strings/ropes\n• **Applied Force** — direct push or pull\n\n**Free Body Diagram tip:** Draw the object as a dot, then show ALL forces acting on it with arrows. Net force = ma!\n\nWant a numerical example?",
+  calculus: "**Calculus — Complete Overview** 📐\n\n**Differentiation (Finding slope/rate of change):**\n• d/dx(xⁿ) = nxⁿ⁻¹\n• d/dx(sin x) = cos x\n• d/dx(cos x) = −sin x\n• d/dx(eˣ) = eˣ\n• d/dx(ln x) = 1/x\n• Chain Rule: d/dx[f(g(x))] = f'(g(x)) · g'(x)\n\n**Integration (Finding area):**\n• ∫xⁿ dx = xⁿ⁺¹/(n+1) + C\n• ∫sin x dx = −cos x + C\n• ∫eˣ dx = eˣ + C\n\n💡 Remember: Differentiation and Integration are inverse operations!\n\nWhich topic — limits, chain rule, or definite integrals?",
+  algebra: "**Algebra Key Concepts** ➕\n\n**Quadratic Formula:**\nx = (−b ± √(b²−4ac)) / 2a\n\n**Important Identities:**\n• (a+b)² = a² + 2ab + b²\n• (a−b)² = a² − 2ab + b²\n• (a+b)(a−b) = a² − b²\n• (a+b)³ = a³ + 3a²b + 3ab² + b³\n\n**Tips for solving equations:**\n1. Simplify both sides first\n2. Move variables to one side\n3. Isolate the unknown\n4. Verify your answer!\n\nWant help with a specific algebraic problem?",
+  geometry: "**Geometry Formulas** 📏\n\n**2D Shapes:**\n• Circle: Area = πr², Circumference = 2πr\n• Triangle: Area = ½ × base × height\n• Rectangle: Area = l × b, Perimeter = 2(l+b)\n• Trapezium: Area = ½(a+b) × h\n\n**3D Shapes:**\n• Sphere: Volume = (4/3)πr³, SA = 4πr²\n• Cylinder: Volume = πr²h, CSA = 2πrh\n• Cone: Volume = (⅓)πr²h, Slant l = √(r²+h²)\n• Cube: Volume = a³, SA = 6a²\n\n💡 Tip: Always note the units — cm vs cm² vs cm³!\n\nNeed help with a specific shape or theorem?",
+  trigonometry: "**Trigonometry Essentials** 📐\n\n**Basic Ratios (SOH-CAH-TOA):**\n• sin θ = Opposite / Hypotenuse\n• cos θ = Adjacent / Hypotenuse\n• tan θ = Opposite / Adjacent\n\n**Key Values:**\n| Angle | sin | cos | tan |\n| 0° | 0 | 1 | 0 |\n| 30° | ½ | √3/2 | 1/√3 |\n| 45° | 1/√2 | 1/√2 | 1 |\n| 60° | √3/2 | ½ | √3 |\n| 90° | 1 | 0 | ∞ |\n\n**Identities:**\n• sin²θ + cos²θ = 1\n• tan θ = sin θ / cos θ\n\nNeed help with any specific formula or problem?",
+  programming: "**Programming Basics** 💻\n\n**Core Concepts:**\n• **Variable** — stores data (int x = 5)\n• **Function** — reusable block of code\n• **Loop** — repeats code (for, while)\n• **Condition** — decision making (if/else)\n• **Array** — collection of same-type data\n\n**Time Complexity (Big O):**\n• O(1) — Constant (best!)\n• O(log n) — Binary Search\n• O(n) — Linear Search\n• O(n²) — Bubble Sort\n\n**Tips for beginners:**\n1. Break problems into small steps\n2. Write pseudocode first\n3. Test with small inputs\n4. Debug one error at a time\n\nWhich language — Python, Java, C++?",
+  algorithm: "**Algorithms — Key Types** 🔍\n\n**Sorting Algorithms:**\n• Bubble Sort — O(n²) — compare & swap neighbors\n• Selection Sort — O(n²) — find min, place it\n• Insertion Sort — O(n²) — insert in right place\n• Merge Sort — O(n log n) — divide & conquer ✅\n• Quick Sort — O(n log n) avg — pivot based ✅\n\n**Searching Algorithms:**\n• Linear Search — O(n) — check each element\n• Binary Search — O(log n) — requires sorted array ✅\n\n**Graph Algorithms:**\n• BFS — Level-by-level traversal (uses Queue)\n• DFS — Depth-first traversal (uses Stack/Recursion)\n\n💡 For interviews: Know Merge Sort + Binary Search thoroughly!\n\nWant a step-by-step example of any algorithm?",
+  python: "**Python Quick Reference** 🐍\n\n**Basics:**\nx = 10          # variable\nprint('Hello')  # output\ntype(x)         # check type\n\n**Lists:**\narr = [1, 2, 3]\narr.append(4)   # add\narr.pop()       # remove last\nlen(arr)        # length\n\n**Functions:**\ndef greet(name):\n    return f'Hello, {name}!'\n\n**Loops:**\nfor i in range(5):    # 0 to 4\n    print(i)\n\nwhile x > 0:\n    x -= 1\n\n💡 Python is indentation-sensitive — always use 4 spaces!\n\nWant help with OOP, file handling, or recursion?",
+  javascript: "**JavaScript Essentials** 🌐\n\n**Variables:**\n• let — block scoped, can reassign\n• const — block scoped, cannot reassign\n• var — function scoped (avoid in modern JS)\n\n**Arrow Functions:**\nconst add = (a, b) => a + b;\n\n**Array Methods:**\n• .map() — transform each element\n• .filter() — keep matching elements\n• .reduce() — collapse to single value\n• .forEach() — loop through\n\n**Async/Await:**\nasync function getData() {\n  const res = await fetch(url);\n  const data = await res.json();\n  return data;\n}\n\n💡 async/await is just cleaner syntax for Promises!\n\nNeed help with DOM, events, or frameworks?",
+  study: "**Smart Study Plan** 📅\n\n**Daily Schedule:**\n🌅 Morning (2 hrs) — Hardest subjects (Maths/Physics)\n☀️ Afternoon (1.5 hrs) — Theory subjects (Bio/Chem)\n🌆 Evening (1 hr) — Revision & practice problems\n🌙 Night — Light reading, no screens 30 min before sleep\n\n**Proven Techniques:**\n🍅 **Pomodoro** — 25 min focus + 5 min break\n🔁 **Active Recall** — Test yourself instead of re-reading\n📊 **Spaced Repetition** — Review after 1 day, 3 days, 1 week\n🗺️ **Mind Maps** — Connect concepts visually\n✍️ **Feynman Technique** — Explain it simply to understand deeply\n\n**Exam Prep Tips:**\n• Solve previous year papers 🗓️\n• Time yourself during practice\n• Don't skip sleep before exams!\n\nWant a weekly study plan for a specific subject?",
+  exam: "**Exam Preparation Strategy** 🎯\n\n**4 Weeks Before:**\n• Complete all syllabus topics\n• Make short notes / formula sheets\n• Identify weak areas\n\n**2 Weeks Before:**\n• Solve past papers (timed!)\n• Focus on high-weightage chapters\n• Revise formulas daily\n\n**1 Week Before:**\n• Only revision — no new topics\n• Attempt mock tests\n• Sleep 7–8 hours every night\n\n**Day Before Exam:**\n• Light revision only\n• Prepare stationery & ID\n• Sleep on time — rest > cramming!\n\n**During Exam:**\n✅ Read all questions first\n✅ Attempt easy ones first\n✅ Manage time — don't get stuck\n✅ Review answers if time permits\n\nNeed a study plan for a specific exam?",
+  motivation: "**Stay Motivated While Studying** 💪\n\n**When you feel like giving up:**\n• Remember your WHY — why did you start?\n• Break big goals into tiny daily wins\n• Celebrate small progress 🎉\n• Compare yourself to yesterday, not others\n\n**Beat Procrastination:**\n• Use the 2-Minute Rule — if it takes <2 min, do it now\n• Start with the hardest task first (Eat the Frog! 🐸)\n• Remove distractions — phone on silent, away from social media\n\n**Mindset Shifts:**\n• 'I can't do this yet' → Growth mindset\n• Failure = Feedback, not the end\n• Consistency beats intensity every time\n\n**Quick Reset:**\n• 10 deep breaths 🧘\n• 5-minute walk outside\n• Drink water, eat something\n\nYou've got this! 🌟 What's the subject giving you trouble?",
+  default: [
+    "That's a great question! 🤔 Let me help you break it down.\n\nCould you tell me:\n1️⃣ Which subject is this from?\n2️⃣ Which chapter or topic?\n3️⃣ What specifically is confusing you?\n\nThe more context you give, the better I can explain! 😊",
+    "Interesting topic! Here's how I'd approach it:\n\n📖 Start with the core definition\n🔍 Look at a real-world example\n✍️ Practice a few problems\n🔁 Revise after 24 hours\n\nTell me which subject — Physics, Maths, CS, or Study Tips — and I'll give you a detailed explanation!",
+    "I'm here to help! 🙌\n\nI can assist you with:\n⚡ Physics — Newton's Laws, Motion, Electricity\n📐 Maths — Calculus, Algebra, Geometry, Trigonometry\n💻 CS — Programming, Algorithms, Python, JavaScript\n📅 Study Tips — Planning, Exam Prep, Motivation\n\nJust ask your doubt and I'll explain it step by step!"
+  ]
+};
+
+let botIdx = 0;
+function getBotReply(msg) {
+  const l = msg.toLowerCase();
+  if (l.includes('newton') || (l.includes('law') && l.includes('motion'))) return BOT_RESPONSES.newton;
+  if (l.includes('motion') || l.includes('velocity') || l.includes('acceleration') || l.includes('displacement')) return BOT_RESPONSES.motion;
+  if (l.includes('electric') || l.includes('ohm') || l.includes('current') || l.includes('resistance') || l.includes('voltage') || l.includes('circuit')) return BOT_RESPONSES.electricity;
+  if (l.includes('force') || l.includes('friction') || l.includes('tension') || l.includes('gravity')) return BOT_RESPONSES.force;
+  if (l.includes('calculus') || l.includes('integral') || l.includes('derivative') || l.includes('differentiat')) return BOT_RESPONSES.calculus;
+  if (l.includes('algebra') || l.includes('quadratic') || l.includes('equation') || l.includes('factor')) return BOT_RESPONSES.algebra;
+  if (l.includes('geometry') || l.includes('circle') || l.includes('triangle') || l.includes('area') || l.includes('volume')) return BOT_RESPONSES.geometry;
+  if (l.includes('trigon') || l.includes('sin') || l.includes('cos') || l.includes('tan') || l.includes('angle')) return BOT_RESPONSES.trigonometry;
+  if (l.includes('python')) return BOT_RESPONSES.python;
+  if (l.includes('javascript') || l.includes('js') || l.includes('async') || l.includes('await') || l.includes('promise')) return BOT_RESPONSES.javascript;
+  if (l.includes('algorithm') || l.includes('sort') || l.includes('search') || l.includes('bfs') || l.includes('dfs')) return BOT_RESPONSES.algorithm;
+  if (l.includes('program') || l.includes('code') || l.includes('coding') || l.includes('function') || l.includes('loop') || l.includes('array')) return BOT_RESPONSES.programming;
+  if (l.includes('exam') || l.includes('test') || l.includes('paper') || l.includes('preparation')) return BOT_RESPONSES.exam;
+  if (l.includes('motivat') || l.includes('procrastinat') || l.includes('give up') || l.includes('stressed') || l.includes('focus')) return BOT_RESPONSES.motivation;
+  if (l.includes('study') || l.includes('plan') || l.includes('schedule') || l.includes('routine') || l.includes('tips')) return BOT_RESPONSES.study;
+  return BOT_RESPONSES.default[botIdx++ % BOT_RESPONSES.default.length];
+}
+
+function addMessage(text, isUser) {
+  const msgs = document.getElementById('chatMessages'); if (!msgs) return;
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const av = document.getElementById('dbAvatar');
+  const initials = av ? av.textContent : 'U';
+  if (isUser) {
+    msgs.innerHTML += `<div style="display:flex;gap:10px;align-items:flex-start;flex-direction:row-reverse"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0">${initials}</div><div style="text-align:right"><div style="background:linear-gradient(135deg,rgba(29,78,216,0.3),rgba(96,165,250,0.2));border:1px solid rgba(96,165,250,0.25);border-radius:16px 4px 16px 16px;padding:11px 15px;max-width:380px;display:inline-block;text-align:left"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6;white-space:pre-wrap">${text}</div></div><div style="font-size:11px;color:#4b5563;margin-top:4px;padding-right:4px">${t}</div></div></div>`;
+  } else {
+    const fmt = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    msgs.innerHTML += `<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:460px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">${fmt}</div></div><div style="font-size:11px;color:#4b5563;margin-top:4px;padding-left:4px">${t}</div></div></div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendChatMessage() {
+  const inp = document.getElementById('chatInput'); if (!inp) return;
+  const msg = inp.value.trim(); if (!msg) return;
+  const sugg = document.getElementById('chatSuggestions'); if(sugg) sugg.style.display='none';
+  addMessage(msg, true); inp.value = ''; inp.style.height='auto';
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += `<div id="typingInd" style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px"><div style="display:flex;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0s"></div><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.2s"></div><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.4s"></div></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => { const t=document.getElementById('typingInd'); if(t)t.remove(); addMessage(getBotReply(msg),false); }, 1000+Math.random()*500);
+}
+function handleChatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMessage();} }
+function sendSuggestion(btn) { const inp=document.getElementById('chatInput'); if(inp){inp.value=btn.textContent;sendChatMessage();} }
+function clearChat() {
+  const msgs=document.getElementById('chatMessages'); if(!msgs)return;
+  msgs.innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:460px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">Chat cleared! Start a new conversation 😊</div></div></div></div>`;
+  const sugg=document.getElementById('chatSuggestions'); if(sugg)sugg.style.display='flex';
+}
+
+let mainChatOpen = false;
+function toggleMainChat() {
+  mainChatOpen = !mainChatOpen;
+  document.getElementById('mainChatOverlay').classList.toggle('open', mainChatOpen);
+  if (mainChatOpen) setTimeout(() => { const inp=document.getElementById('mainChatInput'); if(inp) inp.focus(); }, 350);
+}
+
+function mainAddMsg(text, isUser) {
+  const msgs = document.getElementById('mainChatMsgs'); if(!msgs) return;
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if (isUser) {
+    msgs.innerHTML += `<div style="display:flex;gap:9px;align-items:flex-start;flex-direction:row-reverse"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:white;font-weight:700;font-family:'Syne',sans-serif">U</div><div style="text-align:right"><div style="background:linear-gradient(135deg,rgba(109,40,217,0.3),rgba(139,92,246,0.2));border:1px solid rgba(139,92,246,0.3);border-radius:14px 4px 14px 14px;padding:10px 13px;max-width:260px;display:inline-block;text-align:left"><div style="font-size:13px;color:#f0f0ff;line-height:1.6;white-space:pre-wrap">${text}</div></div><div style="font-size:10.5px;color:#4b5563;margin-top:3px;padding-right:2px">${t}</div></div></div>`;
+  } else {
+    const fmt = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    msgs.innerHTML += `<div style="display:flex;gap:9px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 14px 14px 14px;padding:10px 14px;max-width:270px"><div style="font-size:13px;color:#f0f0ff;line-height:1.6">${fmt}</div></div><div style="font-size:10.5px;color:#4b5563;margin-top:3px;padding-left:2px">${t}</div></div></div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function mainSendMessage() {
+  const inp = document.getElementById('mainChatInput'); if(!inp) return;
+  const msg = inp.value.trim(); if(!msg) return;
+  const sugg = document.getElementById('mainChatSugg'); if(sugg) sugg.style.display='none';
+  mainAddMsg(msg, true);
+  inp.value = ''; inp.style.height = 'auto';
+  const msgs = document.getElementById('mainChatMsgs');
+  msgs.innerHTML += `<div id="mainTyping" style="display:flex;gap:9px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px">🤖</div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 14px 14px 14px;padding:10px 14px"><div style="display:flex;gap:4px;align-items:center"><div style="width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0s"></div><div style="width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.2s"></div><div style="width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.4s"></div></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const ty = document.getElementById('mainTyping'); if(ty) ty.remove();
+    mainAddMsg(getBotReply(msg), false);
+  }, 900 + Math.random()*500);
+}
+
+function mainChatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();mainSendMessage();} }
+function mainSendSugg(btn) { const inp=document.getElementById('mainChatInput'); if(inp){inp.value=btn.textContent; mainSendMessage();} }
+
+document.addEventListener('click', function(e) {
+  const overlay = document.getElementById('mainChatOverlay');
+  const btn = document.getElementById('mainChatBtn');
+  if (mainChatOpen && overlay && btn && !overlay.contains(e.target) && !btn.contains(e.target)) {
+    mainChatOpen = false; overlay.classList.remove('open');
+  }
+});
+</script>
+
+<!-- DASHBOARD OVERLAY -->
+<div class="dashboard-overlay" id="dashboardOverlay">
+  <div class="db-sidebar">
+    <div class="db-sidebar-logo">
+      <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)"/><path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div>
+      <span>Edu-Net</span>
+    </div>
+    <div id="dbNavItems"></div>
+    <div class="db-sidebar-bottom">
+      <div class="db-user-card">
+        <div class="db-avatar" id="dbAvatar">JD</div>
+        <div class="db-user-info">
+          <div class="db-user-name" id="dbUserName">John Doe</div>
+          <div class="db-user-role" id="dbUserRole">Student</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()"><span>→</span> <span>Logout</span></button>
+    </div>
+  </div>
+
+  <div class="db-main">
+    <div class="db-topbar">
+      <div class="db-topbar-title" id="dbPageTitle">Overview</div>
+      <div class="db-topbar-right">
+        <div class="db-notif-btn" onclick="navigateTo('notifications')" style="cursor:pointer">🔔<div class="db-notif-dot"></div></div>
+        <div class="db-notif-btn" onclick="navigateTo('chatbot')" style="cursor:pointer">💬</div>
+      </div>
+    </div>
+
+    <!-- S1: Overview -->
+    <div class="db-page active" id="page-overview">
+      <div class="db-welcome student" id="dbWelcomeBanner">
+        <div class="db-welcome-text"><h2 id="dbWelcomeTitle">Welcome back! 👋</h2><p>Ready to continue your learning journey?</p></div>
+        <div class="db-welcome-emoji">🎓</div>
+      </div>
+      <div class="db-stats" id="dbStatsRow"></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📚 My Courses <span class="count">4 enrolled</span></div>
+          <div class="db-list-item"><div class="db-list-icon">💻</div><div class="db-list-info"><div class="db-list-name">Full Stack Web Dev</div><div class="db-list-meta">68% complete</div><div class="db-progress-bar"><div class="db-progress-fill fill-blue" style="width:68%"></div></div></div><div class="db-list-action blue">Resume</div></div>
+          <div class="db-list-item"><div class="db-list-icon">🧠</div><div class="db-list-info"><div class="db-list-name">Machine Learning Basics</div><div class="db-list-meta">42% complete</div><div class="db-progress-bar"><div class="db-progress-fill fill-purple" style="width:42%"></div></div></div><div class="db-list-action">Resume</div></div>
+          <div class="db-list-item"><div class="db-list-icon">🎨</div><div class="db-list-info"><div class="db-list-name">UI/UX Design Principles</div><div class="db-list-meta">91% complete</div><div class="db-progress-bar"><div class="db-progress-fill fill-green" style="width:91%"></div></div></div><div class="db-list-action green">Resume</div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">📌 Pinned Announcements</div>
+          <div class="ann-item red"><div class="ann-title">⚠️ Exam Schedule <span class="ann-badge red">Urgent</span></div><div class="ann-body">Mid-term exams start from Nov 15. Check your timetable now.</div><div class="ann-time">2 hours ago</div></div>
+          <div class="ann-item yellow"><div class="ann-title">📝 Assignment Deadline <span class="ann-badge yellow">Medium</span></div><div class="ann-body">Web Dev assignment due this Friday at 11:59 PM.</div><div class="ann-time">Yesterday</div></div>
+          <div class="ann-item blue"><div class="ann-title">ℹ️ New Notes Uploaded <span class="ann-badge blue">Info</span></div><div class="ann-body">Chapter 5 notes for ML Basics uploaded.</div><div class="ann-time">2 days ago</div></div>
+        </div>
+      </div>
+      <div class="db-card">
+        <div class="db-card-title">🕐 Recent Activity</div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#60a5fa"></div><div><div class="db-activity-text">Completed Chapter 7 in Full Stack Web Dev</div><div class="db-activity-time">2 hours ago</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#10b981"></div><div><div class="db-activity-text">Earned badge: "Consistent Learner" 🏅</div><div class="db-activity-time">Yesterday</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#a78bfa"></div><div><div class="db-activity-text">Submitted Doubt: "How does async/await work?"</div><div class="db-activity-time">3 days ago</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#f59e0b"></div><div><div class="db-activity-text">Scored 92% on UI/UX Design Quiz</div><div class="db-activity-time">5 days ago</div></div></div>
+      </div>
+    </div>
+
+    <!-- S2: E-Books -->
+    <div class="db-page" id="page-ebooks">
+      <div class="page-header"><h2>📖 E-Books Library</h2><p>Search, read, and download books across all subjects</p></div>
+      <div style="display:flex;gap:12px;margin-bottom:20px"><input class="db-input" style="margin:0;flex:1" placeholder="🔍 Search books, authors, subjects..."/><button class="db-btn-sm blue">Search</button></div>
+      <div class="db-grid3">
+        <div class="db-card" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">📘</div><div style="font-size:14px;font-weight:700;color:#f0f0ff;margin-bottom:4px">Physics Vol. 2</div><div style="font-size:12px;color:#6b7280;margin-bottom:14px">H.C. Verma · 412 pages</div><div style="display:flex;gap:8px;justify-content:center"><button class="db-btn-sm blue" style="font-size:12px;padding:7px 14px">Read Now</button><button class="db-btn-sm ghost" style="font-size:12px;padding:7px 14px">⬇ Download</button></div></div>
+        <div class="db-card" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">📗</div><div style="font-size:14px;font-weight:700;color:#f0f0ff;margin-bottom:4px">Organic Chemistry</div><div style="font-size:12px;color:#6b7280;margin-bottom:14px">Morrison & Boyd · 560 pages</div><div style="display:flex;gap:8px;justify-content:center"><button class="db-btn-sm blue" style="font-size:12px;padding:7px 14px">Read Now</button><button class="db-btn-sm ghost" style="font-size:12px;padding:7px 14px">⬇ Download</button></div></div>
+        <div class="db-card" style="text-align:center"><div style="font-size:40px;margin-bottom:10px">📙</div><div style="font-size:14px;font-weight:700;color:#f0f0ff;margin-bottom:4px">Data Structures</div><div style="font-size:12px;color:#6b7280;margin-bottom:14px">Cormen · 380 pages</div><div style="display:flex;gap:8px;justify-content:center"><button class="db-btn-sm blue" style="font-size:12px;padding:7px 14px">Read Now</button><button class="db-btn-sm ghost" style="font-size:12px;padding:7px 14px">⬇ Download</button></div></div>
+      </div>
+    </div>
+
+    <!-- S3: Notes Library -->
+    <div class="db-page" id="page-notes">
+      <div class="page-header"><h2>📝 Notes Library</h2><p>Access all notes uploaded by your teachers</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📐 Mathematics</div>
+          <div class="note-item"><div class="note-type" style="background:rgba(239,68,68,0.1)">📄</div><div class="note-info"><div class="note-name">Calculus — Unit 3</div><div class="note-meta">PDF · 2.4 MB · 2 days ago</div></div><div class="note-actions"><button class="note-btn read">Read</button><button class="note-btn dl">⬇</button></div></div>
+          <div class="note-item"><div class="note-type" style="background:rgba(239,68,68,0.1)">📊</div><div class="note-info"><div class="note-name">Integration Shortcuts</div><div class="note-meta">PPT · 1.1 MB · 5 days ago</div></div><div class="note-actions"><button class="note-btn read">Read</button><button class="note-btn dl">⬇</button></div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">⚗️ Chemistry</div>
+          <div class="note-item"><div class="note-type" style="background:rgba(16,185,129,0.1)">📄</div><div class="note-info"><div class="note-name">Organic Reactions</div><div class="note-meta">PDF · 3.2 MB · 1 day ago</div></div><div class="note-actions"><button class="note-btn read">Read</button><button class="note-btn dl">⬇</button></div></div>
+          <div class="note-item"><div class="note-type" style="background:rgba(16,185,129,0.1)">📝</div><div class="note-info"><div class="note-name">Periodic Table Notes</div><div class="note-meta">Doc · 0.8 MB · 1 week ago</div></div><div class="note-actions"><button class="note-btn read">Read</button><button class="note-btn dl">⬇</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4: My Doubts -->
+    <div class="db-page" id="page-doubts">
+      <div class="page-header"><h2>❓ My Doubts</h2><p>Submit questions and track answers from teachers</p></div>
+      <div class="db-card" style="margin-bottom:18px">
+        <div class="db-card-title">➕ Submit a New Doubt</div>
+        <input class="db-input" placeholder="Subject (e.g. Physics, Maths...)"/>
+        <select class="db-input" id="teacherSelect" style="appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer;color:#f0f0ff">
+          <option value="" disabled selected style="color:#6b7280;background:#0d0d18">👤 Select a Teacher to submit to...</option>
+          <optgroup label="── Mathematics" style="color:#60a5fa;background:#0d0d18;font-size:11px">
+            <option value="sharma" style="color:#f0f0ff;background:#0d0d18">📐 Prof. Sharma — Mathematics</option>
+            <option value="mehta" style="color:#f0f0ff;background:#0d0d18">📐 Prof. Mehta — Advanced Maths</option>
+          </optgroup>
+          <optgroup label="── Science" style="color:#10b981;background:#0d0d18;font-size:11px">
+            <option value="verma" style="color:#f0f0ff;background:#0d0d18">⚡ Prof. Verma — Physics</option>
+            <option value="kapoor" style="color:#f0f0ff;background:#0d0d18">🔬 Prof. Kapoor — Biology</option>
+            <option value="gupta" style="color:#f0f0ff;background:#0d0d18">🧪 Prof. Gupta — Chemistry</option>
+          </optgroup>
+          <optgroup label="── Computer Science" style="color:#a78bfa;background:#0d0d18;font-size:11px">
+            <option value="john" style="color:#f0f0ff;background:#0d0d18">💻 Prof. John — Web Development</option>
+            <option value="rao" style="color:#f0f0ff;background:#0d0d18">🖥 Prof. Rao — Programming & Algorithms</option>
+          </optgroup>
+          <optgroup label="── Languages & Humanities" style="color:#f59e0b;background:#0d0d18;font-size:11px">
+            <option value="singh" style="color:#f0f0ff;background:#0d0d18">📖 Prof. Singh — English Literature</option>
+            <option value="joshi" style="color:#f0f0ff;background:#0d0d18">📜 Prof. Joshi — History</option>
+          </optgroup>
+        </select>
+        <!-- ✅ FIX 2: Removed duplicate display:flex — only display:none remains so preview is hidden until teacher is selected -->
+        <div id="selectedTeacherPreview" style="display:none;margin:-6px 0 6px;padding:10px 14px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:10px;align-items:center;gap:10px">
+          <div id="teacherAvatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0"></div>
+          <div>
+            <div id="teacherNamePreview" style="font-size:13px;font-weight:600;color:#f0f0ff"></div>
+            <div id="teacherSubPreview" style="font-size:11.5px;color:#9ca3af"></div>
+          </div>
+          <div id="teacherStatusDot" style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11.5px;color:#10b981"><span style="width:7px;height:7px;background:#10b981;border-radius:50%;box-shadow:0 0 6px #10b981;display:inline-block"></span>Online</div>
+        </div>
+        <textarea class="db-input" rows="3" placeholder="Describe your doubt in detail..."></textarea>
+        <button class="db-btn-sm" onclick="submitDoubt()">Submit Doubt</button>
+      </div>
+      <script>
+        const teacherData = {
+          sharma: { name: 'Prof. Sharma', sub: 'Mathematics · Usually responds in ~2 hrs', initials: 'PS', color: '#3b82f6' },
+          mehta:  { name: 'Prof. Mehta',  sub: 'Advanced Maths · Usually responds in ~4 hrs', initials: 'PM', color: '#60a5fa' },
+          verma:  { name: 'Prof. Verma',  sub: 'Physics · Usually responds in ~1 hr', initials: 'PV', color: '#f59e0b' },
+          kapoor: { name: 'Prof. Kapoor', sub: 'Biology · Usually responds in ~3 hrs', initials: 'PK', color: '#10b981' },
+          gupta:  { name: 'Prof. Gupta',  sub: 'Chemistry · Usually responds in ~5 hrs', initials: 'PG', color: '#22d3ee' },
+          john:   { name: 'Prof. John',   sub: 'Web Development · Usually responds in ~2 hrs', initials: 'PJ', color: '#8b5cf6' },
+          rao:    { name: 'Prof. Rao',    sub: 'Programming · Usually responds in ~6 hrs', initials: 'PR', color: '#a78bfa' },
+          singh:  { name: 'Prof. Singh',  sub: 'English Literature · Usually responds in ~3 hrs', initials: 'PS', color: '#ec4899' },
+          joshi:  { name: 'Prof. Joshi',  sub: 'History · Usually responds in ~4 hrs', initials: 'PJ', color: '#f97316' },
+        };
+        document.getElementById('teacherSelect').addEventListener('change', function() {
+          const t = teacherData[this.value];
+          if (!t) return;
+          const preview = document.getElementById('selectedTeacherPreview');
+          preview.style.display = 'flex';
+          document.getElementById('teacherAvatar').textContent = t.initials;
+          document.getElementById('teacherAvatar').style.background = `linear-gradient(135deg, ${t.color}88, ${t.color})`;
+          document.getElementById('teacherNamePreview').textContent = t.name;
+          document.getElementById('teacherSubPreview').textContent = t.sub;
+        });
+        function submitDoubt() {
+          const sel = document.getElementById('teacherSelect');
+          if (!sel.value) {
+            sel.style.borderColor = 'rgba(239,68,68,0.5)';
+            sel.style.boxShadow = '0 0 0 2px rgba(239,68,68,0.15)';
+            setTimeout(() => { sel.style.borderColor = ''; sel.style.boxShadow = ''; }, 2000);
+            return;
+          }
+        }
+      </script>
+      <div class="db-card">
+        <div class="db-card-title">📋 My Doubts <span class="count">4 total</span></div>
+        <div class="doubt-item"><div class="doubt-q">How does async/await work in JavaScript?</div><div class="doubt-meta"><span>📐 Web Dev</span><span>2 days ago</span><span class="doubt-status answered">✓ Answered</span></div></div>
+        <div class="doubt-item"><div class="doubt-q">Explain the difference between mitosis and meiosis</div><div class="doubt-meta"><span>🔬 Biology</span><span>3 days ago</span><span class="doubt-status review">Under Review</span></div></div>
+        <div class="doubt-item"><div class="doubt-q">What is the integral of sin²x?</div><div class="doubt-meta"><span>📐 Maths</span><span>5 days ago</span><span class="doubt-status answered">✓ Answered</span></div></div>
+        <div class="doubt-item"><div class="doubt-q">Explain Newton's third law with an example</div><div class="doubt-meta"><span>⚡ Physics</span><span>1 week ago</span><span class="doubt-status pending">⏳ Pending</span></div></div>
+      </div>
+    </div>
+
+    <!-- S5: Timetable -->
+    <div class="db-page" id="page-timetable">
+      <div class="page-header"><h2>📅 My Timetable</h2><p>Your weekly schedule</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📆 Today — Monday</div>
+          <div class="schedule-row"><div class="schedule-time">9:00 AM</div><div class="schedule-block blue">Mathematics<div class="schedule-sub">Room 204 · Prof. Sharma</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">10:30 AM</div><div class="schedule-block green">Biology<div class="schedule-sub">Lab 3 · Prof. Nair</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">12:00 PM</div><div class="schedule-block orange">⏸ Lunch Break</div></div>
+          <div class="schedule-row"><div class="schedule-time">1:00 PM</div><div class="schedule-block purple">Chemistry<div class="schedule-sub">Room 101 · Prof. Khan</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">2:30 PM</div><div class="schedule-block blue">Physics<div class="schedule-sub">Room 310 · Prof. Verma</div></div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">🟢 Teacher Availability</div>
+          <div class="avail-item"><div class="avail-dot green"></div><div class="avail-name">Prof. Sharma</div><div class="avail-status-text">Free now</div></div>
+          <div class="avail-item"><div class="avail-dot yellow"></div><div class="avail-name">Prof. Nair</div><div class="avail-status-text">Busy soon</div></div>
+          <div class="avail-item"><div class="avail-dot red"></div><div class="avail-name">Prof. Khan</div><div class="avail-status-text">In class</div></div>
+          <div class="avail-item"><div class="avail-dot green"></div><div class="avail-name">Prof. Verma</div><div class="avail-status-text">Free now</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6: Sessions -->
+    <div class="db-page" id="page-sessions">
+      <div class="page-header"><h2>🎥 1-to-1 Sessions</h2><p>Book live sessions with teachers</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📅 Book a Session</div>
+          <input class="db-input" placeholder="Select Teacher"/>
+          <input class="db-input" placeholder="Subject / Topic"/>
+          <input class="db-input" type="date"/>
+          <input class="db-input" type="time"/>
+          <button class="db-btn-sm blue" style="width:100%;justify-content:center">Request Session</button>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">📋 Upcoming Sessions</div>
+          <div class="session-card"><div class="session-avatar">PS</div><div class="session-info"><div class="session-name">Prof. Sharma — Maths</div><div class="session-time">Today at 4:00 PM · 45 min</div></div><span class="session-badge">Confirmed</span></div>
+          <div class="session-card"><div class="session-avatar">VN</div><div class="session-info"><div class="session-name">Prof. Nair — Biology</div><div class="session-time">Tomorrow at 2:00 PM · 30 min</div></div><span class="session-badge">Confirmed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S7: Announcements -->
+    <div class="db-page" id="page-announcements">
+      <div class="page-header"><h2>📢 Announcements</h2><p>Important messages from your teachers</p></div>
+      <div class="ann-item red"><div class="ann-title">⚠️ Mid-Term Exams Schedule <span class="ann-badge red">Urgent</span></div><div class="ann-body">Mid-term exams will be held from November 15–22. All students must carry their hall tickets.</div><div class="ann-time">Today · 8:30 AM · Prof. Sharma</div></div>
+      <div class="ann-item yellow"><div class="ann-title">📝 Web Dev Assignment Due <span class="ann-badge yellow">Medium</span></div><div class="ann-body">The Full Stack Web Development assignment must be submitted before Friday 11:59 PM.</div><div class="ann-time">Yesterday · Prof. Gupta</div></div>
+      <div class="ann-item blue"><div class="ann-title">ℹ️ New Notes Available <span class="ann-badge blue">Info</span></div><div class="ann-body">Chapter 5 and 6 notes for Machine Learning Basics have been uploaded to the Notes Library.</div><div class="ann-time">2 days ago · Prof. Nair</div></div>
+    </div>
+
+    <!-- S8: Attendance -->
+    <div class="db-page" id="page-attendance">
+      <div class="page-header"><h2>✅ My Attendance</h2><p>Track your attendance across all subjects</p></div>
+      <div class="db-stats" style="grid-template-columns:repeat(3,1fr)">
+        <div class="db-stat-card"><div class="db-stat-label">Overall Attendance</div><div class="db-stat-value green">87%</div><div class="db-stat-sub">Above required 75%</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Classes Attended</div><div class="db-stat-value blue">142</div><div class="db-stat-sub">Out of 163 total</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Classes Missed</div><div class="db-stat-value red">21</div><div class="db-stat-sub">This semester</div></div>
+      </div>
+      <div class="db-card">
+        <div class="db-card-title">📋 Attendance Log</div>
+        <table class="att-table">
+          <tr><th>Date</th><th>Subject</th><th>Teacher</th><th>Status</th></tr>
+          <tr><td>Nov 11</td><td>Mathematics</td><td>Prof. Sharma</td><td><span class="att-tag present">Present</span></td></tr>
+          <tr><td>Nov 11</td><td>Biology</td><td>Prof. Nair</td><td><span class="att-tag present">Present</span></td></tr>
+          <tr><td>Nov 10</td><td>Chemistry</td><td>Prof. Khan</td><td><span class="att-tag absent">Absent</span></td></tr>
+          <tr><td>Nov 10</td><td>Physics</td><td>Prof. Verma</td><td><span class="att-tag late">Late</span></td></tr>
+          <tr><td>Nov 9</td><td>Mathematics</td><td>Prof. Sharma</td><td><span class="att-tag present">Present</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- S9: Notifications -->
+    <div class="db-page" id="page-notifications">
+      <div class="page-header"><h2>🔔 Notifications</h2><p>All your latest updates</p></div>
+      <div class="db-card">
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#ef4444"></div><div><div class="db-activity-text"><strong>Exam Alert:</strong> Mid-term exams start Nov 15.</div><div class="db-activity-time">2 hours ago</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#10b981"></div><div><div class="db-activity-text"><strong>Doubt Answered:</strong> Prof. Sharma answered your Maths doubt.</div><div class="db-activity-time">4 hours ago</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#60a5fa"></div><div><div class="db-activity-text"><strong>New Notes:</strong> Chapter 5 notes uploaded for ML Basics.</div><div class="db-activity-time">Yesterday</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#a78bfa"></div><div><div class="db-activity-text"><strong>Session Confirmed:</strong> 1-to-1 with Prof. Sharma — Today 4 PM.</div><div class="db-activity-time">Yesterday</div></div></div>
+        <div class="db-activity-item"><div class="db-activity-dot" style="background:#f59e0b"></div><div><div class="db-activity-text"><strong>Assignment Reminder:</strong> Web Dev assignment due Friday.</div><div class="db-activity-time">2 days ago</div></div></div>
+      </div>
+    </div>
+
+    <!-- S10: AI Chatbot -->
+    <div class="db-page" id="page-chatbot">
+      <div class="page-header"><h2>🤖 AI Chatbot</h2><p>Ask anything — your 24/7 learning assistant</p></div>
+      <div style="display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:500px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden">
+        <div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:12px;background:rgba(10,8,20,0.5)">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative">🤖<div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #05050a"></div></div>
+          <div><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f0f0ff">Edu-Net AI Assistant</div><div style="font-size:11px;color:#22c55e">● Online — Always available</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px"><button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px" onclick="clearChat()">🗑 Clear</button></div>
+        </div>
+        <div id="chatMessages" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:480px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">👋 Hello! I'm your <strong>Edu-Net AI Assistant</strong>.<br><br>📚 Explain any concept<br>❓ Solve doubts step-by-step<br>📅 Study planning & tips<br><br>What would you like to learn today?</div></div></div></div>
+        </div>
+        <div id="chatSuggestions" style="padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.05)">
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Newton's laws</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Calculus formulas</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Python basics</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Exam preparation tips</button>
+        </div>
+        <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:10px;align-items:flex-end;background:rgba(10,8,20,0.5)">
+          <textarea id="chatInput" rows="1" placeholder="Ask anything... (Enter to send)" onkeydown="handleChatKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f0f0ff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;line-height:1.5;max-height:120px;overflow-y:auto"></textarea>
+          <button onclick="sendChatMessage()" style="width:42px;height:42px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- S11: Profile (Student) -->
+    <div class="db-page" id="page-profile">
+      <div class="page-header"><h2>⚙️ Profile & Settings</h2></div>
+      <div class="profile-header">
+        <div class="profile-avatar-lg student" id="profileAvatarLg">JD</div>
+        <div class="profile-info"><h3 id="profileNameLg">John Doe</h3><p>student@email.com</p><div class="profile-role-tag student">🎓 Student</div></div>
+        <button class="db-btn-sm ghost" style="margin-left:auto">✏️ Edit Profile</button>
+      </div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">🔔 Notifications</div>
+          <div class="settings-item"><div class="settings-item-left">📢 Announcement Alerts</div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">❓ Doubt Answered</div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">📝 New Notes Uploaded</div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">📅 Session Reminders</div><button class="toggle-btn off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">🔐 Account & Security</div>
+          <div class="settings-item"><div class="settings-item-left">🔑 Change Password</div><button class="db-btn-sm ghost" style="font-size:12px">Update</button></div>
+          <div class="settings-item"><div class="settings-item-left">📧 Email<div class="settings-item-sub" id="settingsEmail">student@email.com</div></div><button class="db-btn-sm ghost" style="font-size:12px">Change</button></div>
+          <div class="settings-item"><div class="settings-item-left" style="color:#f87171">🚪 Logout all devices</div><button class="db-btn-sm red" style="font-size:12px" onclick="logout()">Logout</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T1: Teacher Overview -->
+    <div class="db-page" id="page-t-overview">
+      <div class="db-welcome teacher" id="dbTeacherWelcome">
+        <div class="db-welcome-text"><h2 id="dbTeacherWelcomeTitle">Welcome back, Prof.! 👋</h2><p>You have 3 pending doubts and 2 upcoming sessions today.</p></div>
+        <div class="db-welcome-emoji">📚</div>
+      </div>
+      <div class="db-stats">
+        <div class="db-stat-card"><div class="db-stat-label">Active Students</div><div class="db-stat-value orange">124</div><div class="db-stat-sub">+8 this week</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Courses Created</div><div class="db-stat-value blue">6</div><div class="db-stat-sub">2 in progress</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Pending Doubts</div><div class="db-stat-value red">3</div><div class="db-stat-sub">Needs attention</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Avg. Rating</div><div class="db-stat-value green">4.9</div><div class="db-stat-sub">Out of 5.0 ⭐</div></div>
+      </div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📅 Today's Schedule</div>
+          <div class="schedule-row"><div class="schedule-time">9:00 AM</div><div class="schedule-block blue">Advanced Mathematics<div class="schedule-sub">Class XI-A · Room 204</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">11:00 AM</div><div class="schedule-block green">Biology Lab Session<div class="schedule-sub">Class X-B · Lab 3</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">2:00 PM</div><div class="schedule-block purple">1-to-1: Ankit Sharma<div class="schedule-sub">Online · 30 min</div></div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">❓ Pending Doubts <span class="count">3 unreviewed</span></div>
+          <div class="doubt-item"><div class="doubt-q">How does async/await work in JS?</div><div class="doubt-meta"><span>Ankit Sharma</span><span>2 hrs ago</span><span class="doubt-status pending">⏳ Pending</span></div></div>
+          <div class="doubt-item"><div class="doubt-q">Explain Newton's third law</div><div class="doubt-meta"><span>Priya Singh</span><span>4 hrs ago</span><span class="doubt-status pending">⏳ Pending</span></div></div>
+          <div class="doubt-item"><div class="doubt-q">What is the integral of sin²x?</div><div class="doubt-meta"><span>Ravi Kumar</span><span>1 day ago</span><span class="doubt-status review">Under Review</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T2: Doubt Queue -->
+    <div class="db-page" id="page-t-doubts">
+      <div class="page-header"><h2>❓ Doubt Review Queue</h2><p>Answer student doubts and track resolution history</p></div>
+      <div class="db-grid2">
+        <div>
+          <div class="doubt-item" style="border-color:rgba(245,158,11,0.3)"><div class="doubt-q">How does async/await work in JavaScript?</div><div class="doubt-meta" style="margin-bottom:10px"><span>👤 Ankit Sharma</span><span>📘 Web Dev</span><span>2 hours ago</span><span class="doubt-status pending">⏳ Pending</span></div><button class="db-btn-sm orange" style="font-size:12px">Answer This</button></div>
+          <div class="doubt-item"><div class="doubt-q">Explain Newton's third law with example</div><div class="doubt-meta" style="margin-bottom:10px"><span>👤 Priya Singh</span><span>⚡ Physics</span><span>4 hours ago</span><span class="doubt-status pending">⏳ Pending</span></div><button class="db-btn-sm orange" style="font-size:12px">Answer This</button></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">✍️ Answer Editor</div>
+          <div style="font-size:13px;color:#9ca3af;margin-bottom:10px">Reply to student doubt:</div>
+          <textarea class="db-input" rows="5" placeholder="Type your detailed answer here..."></textarea>
+          <div style="display:flex;gap:8px"><button class="db-btn-sm orange">📤 Post Answer</button><button class="db-btn-sm ghost">📎 Attach File</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T3: Notes Manager -->
+    <div class="db-page" id="page-t-notes">
+      <div class="page-header"><h2>📝 Notes Management</h2><p>Upload and manage notes for your students</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">⬆️ Upload New Notes</div>
+          <input class="db-input" placeholder="Notes Title"/>
+          <input class="db-input" placeholder="Subject"/>
+          <select class="db-input"><option>Select Category</option><option>PDF</option><option>PPT</option><option>Doc</option><option>Image</option></select>
+          <div style="border:2px dashed rgba(255,255,255,0.1);border-radius:12px;padding:24px;text-align:center;color:#6b7280;font-size:13px;margin-bottom:12px;cursor:pointer">📁 Click to upload or drag & drop<br><span style="font-size:11px">PDF, PPT, DOCX, PNG up to 50MB</span></div>
+          <button class="db-btn-sm orange" style="width:100%;justify-content:center">Upload Notes</button>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">📊 Recent Uploads</div>
+          <div class="note-item"><div class="note-type" style="background:rgba(239,68,68,0.1)">📄</div><div class="note-info"><div class="note-name">Calculus Unit 3</div><div class="note-meta">PDF · Uploaded 2 days ago · 142 views</div></div></div>
+          <div class="note-item"><div class="note-type" style="background:rgba(59,130,246,0.1)">📊</div><div class="note-info"><div class="note-name">Integration Shortcuts</div><div class="note-meta">PPT · Uploaded 5 days ago · 98 views</div></div></div>
+          <div class="note-item"><div class="note-type" style="background:rgba(16,185,129,0.1)">📄</div><div class="note-info"><div class="note-name">Organic Reactions</div><div class="note-meta">PDF · Uploaded 1 day ago · 76 views</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T4: Announcements (Teacher) -->
+    <div class="db-page" id="page-t-announcements">
+      <div class="page-header"><h2>📢 Announcements Manager</h2><p>Create and manage announcements for students</p></div>
+      <div class="db-card" style="margin-bottom:18px">
+        <div class="db-card-title">➕ Create New Announcement</div>
+        <input class="db-input" placeholder="Announcement Title"/>
+        <textarea class="db-input" rows="3" placeholder="Write your message here..."></textarea>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button class="db-btn-sm red" style="font-size:11px;padding:5px 12px">🔴 Urgent</button>
+          <button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px">🟡 Medium</button>
+          <button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px">🔵 Info</button>
+        </div>
+        <button class="db-btn-sm orange">📌 Pin & Publish</button>
+      </div>
+      <div class="db-card">
+        <div class="db-card-title">📋 Published Announcements</div>
+        <div class="ann-item red"><div class="ann-title">⚠️ Mid-Term Exams Schedule <span class="ann-badge red">Urgent</span></div><div class="ann-body">Mid-term exams start November 15–22.</div><div class="ann-time">Today · 142 students notified</div></div>
+        <div class="ann-item yellow"><div class="ann-title">📝 Assignment Deadline <span class="ann-badge yellow">Medium</span></div><div class="ann-body">Web Dev assignment due this Friday at 11:59 PM.</div><div class="ann-time">Yesterday · 98 students notified</div></div>
+      </div>
+    </div>
+
+    <!-- T5: Schedule Manager -->
+    <div class="db-page" id="page-t-schedule">
+      <div class="page-header"><h2>📅 Schedule Manager</h2><p>Manage your timetable and events</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">➕ Add New Schedule</div>
+          <input class="db-input" placeholder="Class / Subject"/>
+          <input class="db-input" placeholder="Room / Location"/>
+          <input class="db-input" type="date"/>
+          <input class="db-input" type="time" placeholder="Start time"/>
+          <input class="db-input" type="time" placeholder="End time"/>
+          <button class="db-btn-sm orange" style="width:100%;justify-content:center">Add to Schedule</button>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">📋 Upcoming Events</div>
+          <div class="db-activity-item"><div class="db-activity-dot" style="background:#60a5fa"></div><div><div class="db-activity-text"><strong>Advanced Mathematics</strong> — Class XI-A</div><div class="db-activity-time">Today 9:00 AM · Room 204</div></div></div>
+          <div class="db-activity-item"><div class="db-activity-dot" style="background:#10b981"></div><div><div class="db-activity-text"><strong>Biology Lab</strong> — Class X-B</div><div class="db-activity-time">Today 11:00 AM · Lab 3</div></div></div>
+          <div class="db-activity-item"><div class="db-activity-dot" style="background:#a78bfa"></div><div><div class="db-activity-text"><strong>1-to-1 Session</strong> — Ankit Sharma</div><div class="db-activity-time">Today 2:00 PM · Online</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T6: Sessions (Teacher) -->
+    <div class="db-page" id="page-t-sessions">
+      <div class="page-header"><h2>🎥 1-to-1 Sessions</h2><p>Manage live sessions with students</p></div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📅 Incoming Requests</div>
+          <div class="session-card"><div class="session-avatar">AS</div><div class="session-info"><div class="session-name">Ankit Sharma</div><div class="session-time">Requested: Today 4:00 PM · Maths</div></div><div style="display:flex;gap:6px"><button class="db-btn-sm" style="font-size:11px;padding:5px 12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10b981;border-radius:8px">Accept</button><button class="db-btn-sm red" style="font-size:11px;padding:5px 12px">Decline</button></div></div>
+          <div class="session-card"><div class="session-avatar">NK</div><div class="session-info"><div class="session-name">Neha Kapoor</div><div class="session-time">Requested: Tomorrow 2:00 PM · Biology</div></div><div style="display:flex;gap:6px"><button class="db-btn-sm" style="font-size:11px;padding:5px 12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10b981;border-radius:8px">Accept</button><button class="db-btn-sm red" style="font-size:11px;padding:5px 12px">Decline</button></div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">✅ Confirmed Sessions</div>
+          <div class="session-card"><div class="session-avatar">PS</div><div class="session-info"><div class="session-name">Priya Singh — Physics</div><div class="session-time">Today 2:00 PM · 30 min</div></div><span class="session-badge">Live Soon</span></div>
+          <div class="session-card"><div class="session-avatar">RK</div><div class="session-info"><div class="session-name">Ravi Kumar — Maths</div><div class="session-time">Nov 13 · 11:00 AM · 45 min</div></div><span class="session-badge">Confirmed</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T7: Profile (Teacher) -->
+    <div class="db-page" id="page-t-profile">
+      <div class="page-header"><h2>⚙️ Profile & Settings</h2></div>
+      <div class="profile-header">
+        <div class="profile-avatar-lg teacher" id="teacherProfileAvatar">JP</div>
+        <div class="profile-info">
+          <h3 id="teacherProfileName">Prof. John</h3>
+          <p>teacher@school.com</p>
+          <div class="profile-role-tag teacher">📚 Teacher</div>
+        </div>
+        <button class="db-btn-sm ghost" style="margin-left:auto">✏️ Edit Profile</button>
+      </div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📌 Default Pin Settings</div>
+          <div class="settings-item"><div class="settings-item-left">🔴 Auto-pin urgent announcements<div class="settings-item-sub">Urgent posts auto-pinned to top</div></div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">⏱ Auto-unpin after 7 days<div class="settings-item-sub">Older posts removed automatically</div></div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">📖 Read receipts enabled<div class="settings-item-sub">See who viewed your announcements</div></div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">🔔 Notification Settings</div>
+          <div class="settings-item"><div class="settings-item-left">❓ New Doubt Submitted<div class="settings-item-sub">Alert when students submit doubts</div></div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">📅 Session Request<div class="settings-item-sub">When student books a session</div></div><button class="toggle-btn on" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+          <div class="settings-item"><div class="settings-item-left">✅ Attendance Reminders<div class="settings-item-sub">Remind before class starts</div></div><button class="toggle-btn off" onclick="this.classList.toggle('on');this.classList.toggle('off')"></button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

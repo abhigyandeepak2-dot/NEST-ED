@@ -26,13 +26,25 @@ public class User {
 
     private String profilePicture;
     private String bio;
+    private String avatar;
 
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public enum Role {
         STUDENT,
         TEACHER,
         ADMIN
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.avatar == null && this.name != null && !this.name.isEmpty()) {
+            this.avatar = this.name.substring(0, Math.min(2, this.name.length())).toUpperCase();
+        }
     }
 
     public User() {}
@@ -50,6 +62,10 @@ public class User {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    // Convenience alias for auth compatibility
+    public String getFullName() { return name; }
+    public void setFullName(String fullName) { this.name = fullName; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
@@ -64,6 +80,15 @@ public class User {
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
+
+    public String getAvatar() {
+        if (avatar != null) return avatar;
+        if (name != null && !name.isEmpty()) {
+            return name.substring(0, Math.min(2, name.length())).toUpperCase();
+        }
+        return "ED";
+    }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

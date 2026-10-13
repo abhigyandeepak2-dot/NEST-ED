@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Timetable — Edu-Net</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root { --bg: #05050a; --text: #f0f0ff; }
+
+html, body { height:100%; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex; flex-direction: row;
+  min-height: 100vh; overflow: hidden;
+}
+
+/* ================= SIDEBAR ================= */
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+  height: 100vh;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; background:linear-gradient(135deg,#6d28d9,#8b5cf6); display:flex; align-items:center; justify-content:center; }
+
+.db-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 20px;
+  margin: 1px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.db-nav-item:visited {
+  color: #9ca3af;
+  text-decoration: none;
+}
+.db-nav-item:active {
+  text-decoration: none;
+}
+
+
+
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; background: linear-gradient(135deg,#1d4ed8,#60a5fa); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+/* ================= MAIN AREA ================= */
+.db-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; height: 100vh; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center;
+  padding: 0 26px;
+}
+.db-topbar-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:#f0f0ff; }
+.db-content { padding: 26px; max-width: 900px; }
+
+.page-header { margin-bottom: 22px; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; letter-spacing:-0.3px; margin-bottom:4px; }
+.page-header p { font-size:13px; color:#9ca3af; }
+
+.db-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+.db-card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; color:#f0f0ff; display:flex; align-items:center; gap:8px; }
+
+.schedule-row { display:flex; gap:10px; margin-bottom:8px; }
+.schedule-time { font-size:12px; color:#6b7280; width:70px; flex-shrink:0; padding-top:3px; }
+.schedule-block { flex:1; padding:10px 14px; border-radius:11px; font-size:13px; font-weight:600; }
+.schedule-block.blue { background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.2); color:#93c5fd; }
+.schedule-block.green { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); color:#6ee7b7; }
+.schedule-block.purple { background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.2); color:#c4b5fd; }
+.schedule-block.orange { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.2); color:#fcd34d; }
+.schedule-sub { font-size:11px; font-weight:400; opacity:0.7; margin-top:2px; }
+
+.avail-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.avail-item:last-child { border-bottom:none; }
+.avail-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+.avail-dot.green { background:#22c55e; box-shadow:0 0 8px #22c55e; }
+.avail-dot.yellow { background:#f59e0b; box-shadow:0 0 8px #f59e0b; }
+.avail-dot.red { background:#ef4444; box-shadow:0 0 8px #ef4444; }
+.avail-name { font-size:13px; font-weight:600; color:#f0f0ff; flex:1; }
+.avail-status-text { font-size:12px; color:#9ca3af; }
+</style>
+</head>
+<body>
+
+<div class="db-sidebar">
+  <div class="db-sidebar-logo">
+    <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)"/><path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div>
+    <span>Edu-Net</span>
+  </div>
+ <div>
+
+  <a href="overview.html" class="db-nav-item">
+    <span class="db-nav-icon">🏠</span>
+    <span>Overview</span>
+  </a>
+
+  <a href="noteslibrary.html" class="db-nav-item">
+    <span class="db-nav-icon">📝</span>
+    <span>Notes Library</span>
+  </a>
+
+  <a href="doubts.html" class="db-nav-item">
+    <span class="db-nav-icon">❓</span>
+    <span>My Doubts</span>
+    <span class="db-nav-badge">2</span>
+  </a>
+
+  <a href="timetable.html" class="db-nav-item active">
+    <span class="db-nav-icon">📅</span>
+    <span>Timetable</span>
+  </a>
+
+  <a href="sessions.html" class="db-nav-item">
+    <span class="db-nav-icon">🎥</span>
+    <span>1-to-1 Sessions</span>
+  </a>
+
+  <a href="announcements.html" class="db-nav-item">
+    <span class="db-nav-icon">📢</span>
+    <span>Announcements</span>
+    <span class="db-nav-badge">3</span>
+  </a>
+
+  <a href="attendance.html" class="db-nav-item">
+    <span class="db-nav-icon">✅</span>
+    <span>Attendance</span>
+  </a>
+
+  <a href="notifications.html" class="db-nav-item">
+    <span class="db-nav-icon">🔔</span>
+    <span>Notifications</span>
+    <span class="db-nav-badge">5</span>
+  </a>
+
+  <a href="chatbot.html" class="db-nav-item">
+    <span class="db-nav-icon">🤖</span>
+    <span>AI Chatbot</span>
+  </a>
+
+  <a href="ebooks.html" class="db-nav-item">
+    <span class="db-nav-icon">📖</span>
+    <span>E-Books</span>
+  </a>
+
+  <a href="settings.html" class="db-nav-item">
+    <span class="db-nav-icon">⚙️</span>
+    <span>Settings</span>
+  </a>
+
+</div>
+  <div class="db-sidebar-bottom">
+    <div class="db-user-card">
+      <div class="db-avatar">JD</div>
+      <div class="db-user-info">
+        <div class="db-user-name">John Doe</div>
+        <div class="db-user-role">Student</div>
+      </div>
+    </div>
+    <button class="btn-logout"><span>→</span> <span>Logout</span></button>
+  </div>
+</div>
+
+<div class="db-main">
+  <div class="db-topbar"><div class="db-topbar-title">Timetable</div></div>
+  <div class="db-content">
+    <div class="page-header"><h2>📅 My Timetable</h2><p>Your weekly schedule</p></div>
+    <div class="db-grid2">
+      <div class="db-card">
+        <div class="db-card-title">📆 Today — Monday</div>
+        <div class="schedule-row"><div class="schedule-time">9:00 AM</div><div class="schedule-block blue">Mathematics<div class="schedule-sub">Room 204 · Prof. Sharma</div></div></div>
+        <div class="schedule-row"><div class="schedule-time">10:30 AM</div><div class="schedule-block green">Biology<div class="schedule-sub">Lab 3 · Prof. Nair</div></div></div>
+        <div class="schedule-row"><div class="schedule-time">12:00 PM</div><div class="schedule-block orange">⏸ Lunch Break</div></div>
+        <div class="schedule-row"><div class="schedule-time">1:00 PM</div><div class="schedule-block purple">Chemistry<div class="schedule-sub">Room 101 · Prof. Khan</div></div></div>
+        <div class="schedule-row"><div class="schedule-time">2:30 PM</div><div class="schedule-block blue">Physics<div class="schedule-sub">Room 310 · Prof. Verma</div></div></div>
+      </div>
+      <div class="db-card">
+        <div class="db-card-title">🟢 Teacher Availability</div>
+        <div class="avail-item"><div class="avail-dot green"></div><div class="avail-name">Prof. Sharma</div><div class="avail-status-text">Free now</div></div>
+        <div class="avail-item"><div class="avail-dot yellow"></div><div class="avail-name">Prof. Nair</div><div class="avail-status-text">Busy soon</div></div>
+        <div class="avail-item"><div class="avail-dot red"></div><div class="avail-name">Prof. Khan</div><div class="avail-status-text">In class</div></div>
+        <div class="avail-item"><div class="avail-dot green"></div><div class="avail-name">Prof. Verma</div><div class="avail-status-text">Free now</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

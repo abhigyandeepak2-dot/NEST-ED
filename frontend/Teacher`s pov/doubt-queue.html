@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Teacher - Doubt Review Queue (Live View)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin:0; background:#05050a; font-family:'DM Sans',sans-serif; }
+
+.dashboard-overlay {
+  position: relative; inset: 0;
+  background: #05050a;
+  display: flex; flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(135deg,#7c3aed,#8b5cf6); display:flex; align-items:center; justify-content:center; }
+
+.db-nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 20px; margin: 1px 10px; border-radius: 10px;
+  cursor: pointer; font-size: 13.5px; font-weight: 500; color: #9ca3af;
+  transition: all 0.2s; position: relative;
+}
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active.teacher-nav { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; }
+.db-avatar.teacher { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+.db-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.db-topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #f0f0ff; }
+.db-topbar-right { display: flex; align-items: center; gap: 12px; }
+.db-notif-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; transition: background 0.2s; position: relative;
+}
+.db-notif-btn:hover { background: rgba(255,255,255,0.08); }
+.db-notif-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #05050a; }
+
+.db-page { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 80px; }
+.db-page.active { display: block; }
+
+.page-header { margin-bottom:22px; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; letter-spacing:-0.3px; margin-bottom:4px; }
+.page-header p { font-size:13px; color:#9ca3af; }
+
+.db-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+@media (max-width: 800px) { .db-grid2 { grid-template-columns:1fr; } }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+.db-card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; color:#f0f0ff; display:flex; align-items:center; gap:8px; }
+
+.db-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:10px; padding:10px 13px; color:#f0f0ff; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color 0.25s, box-shadow 0.25s; margin-bottom:12px; box-sizing:border-box; }
+.db-input::placeholder { color:#6b7280; }
+.db-input:focus { border-color:rgba(139,92,246,0.5); box-shadow:0 0 0 3px rgba(139,92,246,0.1); }
+textarea.db-input { resize:vertical; font-family:'DM Sans',sans-serif; }
+
+.db-btn-sm { padding:9px 18px; border-radius:9px; border:none; background:linear-gradient(135deg,#7c3aed,#8b5cf6); color:white; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
+.db-btn-sm:hover { box-shadow:0 4px 16px rgba(139,92,246,0.4); transform:translateY(-1px); }
+.db-btn-sm.orange { background:linear-gradient(135deg,#b45309,#f59e0b); }
+.db-btn-sm.ghost { background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9ca3af; }
+.db-btn-sm.ghost:hover { background:rgba(255,255,255,0.05); }
+
+.doubt-item { padding:14px; border-radius:13px; margin-bottom:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:border-color 0.2s; }
+.doubt-item:hover { border-color:rgba(139,92,246,0.25); }
+.doubt-q { font-size:13.5px; font-weight:600; color:#f0f0ff; margin-bottom:5px; }
+.doubt-meta { font-size:11.5px; color:#6b7280; display:flex; gap:14px; flex-wrap:wrap; }
+.doubt-status { font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; }
+.doubt-status.pending { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.doubt-status.review { background:rgba(139,92,246,0.15); color:#a78bfa; }
+.doubt-status.answered { background:rgba(16,185,129,0.15); color:#10b981; }
+</style>
+</head>
+<body>
+
+<div class="dashboard-overlay">
+  <div class="db-sidebar">
+    <div class="db-sidebar-logo">
+      <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)"/><path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div>
+      <span>Edu-Net</span>
+    </div>
+    <div>
+      <div class="db-nav-item active teacher-nav">
+        <span class="db-nav-icon">❓</span>
+        <span>Doubt Queue</span>
+        <span class="db-nav-badge" id="teacherBadge">0</span>
+      </div>
+    </div>
+    <div class="db-sidebar-bottom">
+      <div class="db-user-card">
+        <div class="db-avatar teacher">PS</div>
+        <div class="db-user-info">
+          <div class="db-user-name">Prof. Sharma</div>
+          <div class="db-user-role">Teacher</div>
+        </div>
+      </div>
+      <button class="btn-logout"><span>→</span> <span>Logout</span></button>
+    </div>
+  </div>
+
+  <div class="db-main">
+    <div class="db-topbar">
+      <div class="db-topbar-title">Doubt Review Queue</div>
+      <div class="db-topbar-right">
+        <div class="db-notif-btn">🔔<div class="db-notif-dot"></div></div>
+      </div>
+    </div>
+
+    <div class="db-page active" id="page-t-doubts">
+      <div class="page-header"><h2>❓ Doubt Review Queue</h2><p>Answer student doubts and track resolution history</p></div>
+      <div class="db-grid2">
+        <!-- Doubts Queue -->
+        <div id="teacherQueueContainer">
+          <p style="color:#6b7280">Loading student doubts...</p>
+        </div>
+
+        <!-- Answer Editor -->
+        <div class="db-card">
+          <div class="db-card-title">✍️ Answer Editor</div>
+          <div id="editorTarget" style="font-size:13px;color:#9ca3af;margin-bottom:10px">Select a doubt from the left to answer:</div>
+          <textarea class="db-input" id="answerInput" rows="5" placeholder="Type your detailed answer here..."></textarea>
+          <div style="display:flex;gap:8px">
+            <button class="db-btn-sm orange" onclick="postAnswer()">📤 Post Answer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:8080/api/doubts';
+  const CURRENT_TEACHER = { code: 'kapoor', name: 'Prof. Kapoor' };
+  let activeDoubtId = null;
+
+  function formatTimeAgo(dateStr) {
+    if (!dateStr) return 'Recently';
+    const diffHours = Math.max(1, Math.round((new Date() - new Date(dateStr)) / (1000 * 60 * 60)));
+    return diffHours < 24 ? `${diffHours} hrs ago` : `${Math.floor(diffHours/24)} days ago`;
+  }
+
+  // 1. Fetch teacher doubts queue
+  async function loadTeacherQueue() {
+    try {
+      const res = await fetch(`${API_BASE}/teacher/${CURRENT_TEACHER.code}`);
+      const doubts = await res.json();
+
+      let pendingCount = 0;
+      let html = '';
+
+      doubts.forEach(d => {
+        if (d.status !== 'ANSWERED') pendingCount++;
+        const isPending = d.status === 'PENDING';
+
+        html += `
+          <div class="doubt-item" id="doubt-${d.id}" style="${d.id === activeDoubtId ? 'border-color:#7c3aed' : ''}">
+            <div class="doubt-q">${d.question}</div>
+            <div class="doubt-meta" style="margin-bottom:10px">
+              <span>👤 ${d.studentName}</span>
+              <span>📘 ${d.subject}</span>
+              <span>${formatTimeAgo(d.createdAt)}</span>
+              <span class="doubt-status ${d.status.toLowerCase()}">${d.status === 'PENDING' ? '⏳ Pending' : d.status === 'REVIEW' ? 'Under Review' : '✓ Answered'}</span>
+            </div>
+            ${d.status !== 'ANSWERED' ? `
+              <button class="db-btn-sm orange" style="font-size:12px" onclick="selectDoubt(${d.id}, '${d.studentName.replace(/'/g,"\\'")}', '${d.question.replace(/'/g,"\\'")}')">
+                ✍️ Answer This
+              </button>` : `
+              <div style="font-size:12.5px;color:#10b981;margin-top:6px;background:rgba(16,185,129,0.05);padding:8px 10px;border-radius:6px">
+                <strong>Answer:</strong> ${d.answer}
+              </div>`}
+          </div>`;
+      });
+
+      document.getElementById('teacherQueueContainer').innerHTML = html || '<p style="color:#6b7280">No doubts assigned yet.</p>';
+      document.getElementById('teacherBadge').textContent = pendingCount;
+    } catch (err) {
+      console.error(err);
+      document.getElementById('teacherQueueContainer').innerHTML = '<p style="color:#ef4444">Cannot connect to backend server.</p>';
+    }
+  }
+
+  // 2. Select a doubt to answer
+  async function selectDoubt(id, studentName, question) {
+    activeDoubtId = id;
+    document.getElementById('editorTarget').innerHTML = `Replying to <strong>${studentName}</strong>: <br/><em style="color:#f0f0ff">"${question}"</em>`;
+    document.getElementById('answerInput').focus();
+
+    // Mark as under review
+    await fetch(`${API_BASE}/${id}/review`, { method: 'PATCH' });
+    loadTeacherQueue();
+  }
+
+  // 3. Post answer to backend
+  async function postAnswer() {
+    if (!activeDoubtId) {
+      alert('Please click "Answer This" on a student doubt first.');
+      return;
+    }
+
+    const answer = document.getElementById('answerInput').value.trim();
+    if (!answer) {
+      alert('Please write an answer before submitting.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/${activeDoubtId}/answer`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer: answer })
+      });
+
+      if (res.ok) {
+        alert('Answer posted successfully!');
+        document.getElementById('answerInput').value = '';
+        document.getElementById('editorTarget').textContent = 'Select a doubt from the left to answer:';
+        activeDoubtId = null;
+        loadTeacherQueue(); // Refresh queue
+      } else {
+        alert('Failed to post answer.');
+      }
+    } catch (e) {
+      alert('Cannot connect to backend.');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadTeacherQueue);
+</script>
+</body>
+</html>

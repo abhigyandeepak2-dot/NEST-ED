@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #05050a;
+  --bg2: #080810;
+  --surface: rgba(255,255,255,0.03);
+  --surface2: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.06);
+  --border-glow: rgba(139,92,246,0.3);
+  --text: #f0f0ff;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --purple: #8b5cf6;
+  --purple2: #7c3aed;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --pink: #ec4899;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* DASHBOARD SHELL (always visible on this standalone page) */
+.dashboard-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: #05050a;
+  display: flex; flex-direction: row;
+  opacity: 1; pointer-events: all;
+  overflow: hidden;
+}
+
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+  transition: width 0.3s;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
+
+.db-nav-section { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #4b5563; text-transform: uppercase; padding: 10px 20px 6px; }
+.db-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 20px;
+  margin: 1px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: all 0.2s;
+  position: relative;
+}
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active { background: rgba(139,92,246,0.12); color: #a78bfa; }
+.db-nav-item.active.student-nav { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.db-nav-item.active.teacher-nav { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; }
+.db-avatar.student { background: linear-gradient(135deg,#1d4ed8,#60a5fa); }
+.db-avatar.teacher { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+.db-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.db-topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #f0f0ff; }
+.db-topbar-right { display: flex; align-items: center; gap: 12px; }
+.db-notif-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; transition: background 0.2s; position: relative;
+}
+.db-notif-btn:hover { background: rgba(255,255,255,0.08); }
+.db-notif-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #05050a; }
+
+.db-page { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 80px; }
+.db-page.active { display: block; }
+
+.db-welcome {
+  border-radius: 20px; padding: 28px 32px; margin-bottom: 24px;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.db-welcome.student { background: linear-gradient(135deg,rgba(29,78,216,0.25),rgba(96,165,250,0.1)); border: 1px solid rgba(96,165,250,0.25); }
+.db-welcome.teacher { background: linear-gradient(135deg,rgba(180,83,9,0.25),rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.25); }
+.db-welcome::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; filter:blur(60px); pointer-events:none; }
+.db-welcome.student::before { background:rgba(96,165,250,0.15); }
+.db-welcome.teacher::before { background:rgba(245,158,11,0.15); }
+.db-welcome-text h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:6px; color:#f0f0ff; }
+.db-welcome-text p { font-size:13.5px; color:#9ca3af; line-height:1.6; }
+.db-welcome-emoji { font-size:48px; line-height:1; }
+
+.db-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px; }
+.db-stat-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; padding:18px 20px; transition:transform 0.2s, border-color 0.2s; }
+.db-stat-card:hover { transform:translateY(-3px); border-color:rgba(139,92,246,0.25); }
+.db-stat-label { font-size:11.5px; color:#6b7280; font-weight:500; margin-bottom:7px; letter-spacing:0.3px; }
+.db-stat-value { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; letter-spacing:-1px; }
+.db-stat-value.blue { color:#60a5fa; text-shadow:0 0 20px rgba(96,165,250,0.3); }
+.db-stat-value.green { color:#10b981; text-shadow:0 0 20px rgba(16,185,129,0.3); }
+.db-stat-value.orange { color:#f59e0b; text-shadow:0 0 20px rgba(245,158,11,0.3); }
+.db-stat-value.purple { color:#a78bfa; text-shadow:0 0 20px rgba(167,139,250,0.3); }
+.db-stat-value.red { color:#f87171; text-shadow:0 0 20px rgba(248,113,113,0.3); }
+.db-stat-sub { font-size:11px; color:#6b7280; margin-top:3px; }
+
+.db-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+.db-card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; color:#f0f0ff; display:flex; align-items:center; gap:8px; }
+.db-card-title span.count { margin-left:auto; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; color:#6b7280; }
+
+.doubt-item { padding:14px; border-radius:13px; margin-bottom:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); transition:border-color 0.2s; }
+.doubt-item:hover { border-color:rgba(139,92,246,0.25); }
+.doubt-q { font-size:13.5px; font-weight:600; color:#f0f0ff; margin-bottom:5px; }
+.doubt-meta { font-size:11.5px; color:#6b7280; display:flex; gap:14px; flex-wrap:wrap; }
+.doubt-status { font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; }
+.doubt-status.pending { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.doubt-status.answered { background:rgba(16,185,129,0.15); color:#10b981; }
+.doubt-status.review { background:rgba(139,92,246,0.15); color:#a78bfa; }
+
+.schedule-row { display:flex; gap:10px; margin-bottom:8px; }
+.schedule-time { font-size:12px; color:#6b7280; width:70px; flex-shrink:0; padding-top:3px; }
+.schedule-block { flex:1; padding:10px 14px; border-radius:11px; font-size:13px; font-weight:600; }
+.schedule-block.blue { background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.2); color:#93c5fd; }
+.schedule-block.green { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.2); color:#6ee7b7; }
+.schedule-block.purple { background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.2); color:#c4b5fd; }
+.schedule-block.orange { background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.2); color:#fcd34d; }
+.schedule-sub { font-size:11px; font-weight:400; opacity:0.7; margin-top:2px; }
+
+.db-chat-btn { position:fixed; bottom:28px; right:28px; width:54px; height:54px; background:linear-gradient(135deg,#6d28d9,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; box-shadow:0 0 0 0 rgba(139,92,246,0.4); animation:chat-pulse 3s ease infinite; transition:transform 0.2s; border:none; }
+.db-chat-btn:hover { transform:scale(1.1); }
+.db-chat-online { position:absolute; top:2px; right:2px; width:14px; height:14px; background:#22c55e; border-radius:50%; border:2px solid #05050a; }
+@keyframes chat-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(139,92,246,0); }
+}
+
+@media (max-width: 900px) {
+  .db-sidebar { width: 60px; }
+  .db-sidebar-logo span, .db-nav-item span:not(.db-nav-icon), .db-nav-section, .db-user-card, .btn-logout span { display:none; }
+  .db-stats { grid-template-columns:1fr 1fr; }
+  .db-grid2 { grid-template-columns:1fr; }
+  .db-welcome { flex-direction:column; }
+  .db-page { padding:20px 16px 80px; }
+  .db-nav-item { padding:10px; justify-content:center; margin:2px 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard-overlay active" id="dashboardOverlay">
+  <div class="db-sidebar">
+    <div class="db-sidebar-logo">
+      <img class="logo-icon" src="https://api.iconify.design/ph:graduation-cap-fill.svg?color=%238b5cf6" alt="">
+      <span>Edu-Net</span>
+    </div>
+    <div id="dbNavItems"></div>
+    <div class="db-sidebar-bottom">
+      <div class="db-user-card">
+        <div class="db-avatar teacher" id="dbAvatar">JP</div>
+        <div class="db-user-info">
+          <div class="db-user-name" id="dbUserName">Prof. John</div>
+          <div class="db-user-role" id="dbUserRole">Teacher</div>
+        </div>
+      </div>
+      <button class="btn-logout"><span>→</span> <span>Logout</span></button>
+    </div>
+  </div>
+
+  <div class="db-main">
+    <div class="db-topbar">
+      <div class="db-topbar-title" id="dbPageTitle">Overview</div>
+      <div class="db-topbar-right">
+        <div class="db-notif-btn">🔔<div class="db-notif-dot"></div></div>
+        <div class="db-notif-btn">💬</div>
+      </div>
+    </div>
+
+    <!-- T1: Teacher Overview -->
+    <div class="db-page active" id="page-t-overview">
+      <div class="db-welcome teacher" id="dbTeacherWelcome">
+        <div class="db-welcome-text"><h2 id="dbTeacherWelcomeTitle">Welcome back, Prof.! 👋</h2><p>You have 3 pending doubts and 2 upcoming sessions today.</p></div>
+        <div class="db-welcome-emoji">📚</div>
+      </div>
+      <div class="db-stats">
+        <div class="db-stat-card"><div class="db-stat-label">Active Students</div><div class="db-stat-value orange">124</div><div class="db-stat-sub">+8 this week</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Courses Created</div><div class="db-stat-value blue">6</div><div class="db-stat-sub">2 in progress</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Pending Doubts</div><div class="db-stat-value red">3</div><div class="db-stat-sub">Needs attention</div></div>
+        <div class="db-stat-card"><div class="db-stat-label">Avg. Rating</div><div class="db-stat-value green">4.9</div><div class="db-stat-sub">Out of 5.0 ⭐</div></div>
+      </div>
+      <div class="db-grid2">
+        <div class="db-card">
+          <div class="db-card-title">📅 Today's Schedule</div>
+          <div class="schedule-row"><div class="schedule-time">9:00 AM</div><div class="schedule-block blue">Advanced Mathematics<div class="schedule-sub">Class XI-A · Room 204</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">11:00 AM</div><div class="schedule-block green">Biology Lab Session<div class="schedule-sub">Class X-B · Lab 3</div></div></div>
+          <div class="schedule-row"><div class="schedule-time">2:00 PM</div><div class="schedule-block purple">1-to-1: Ankit Sharma<div class="schedule-sub">Online · 30 min</div></div></div>
+        </div>
+        <div class="db-card">
+          <div class="db-card-title">❓ Pending Doubts <span class="count">3 unreviewed</span></div>
+          <div class="doubt-item"><div class="doubt-q">How does async/await work in JS?</div><div class="doubt-meta"><span>Ankit Sharma</span><span>2 hrs ago</span><span class="doubt-status pending">⏳ Pending</span></div></div>
+          <div class="doubt-item"><div class="doubt-q">Explain Newton's third law</div><div class="doubt-meta"><span>Priya Singh</span><span>4 hrs ago</span><span class="doubt-status pending">⏳ Pending</span></div></div>
+          <div class="doubt-item"><div class="doubt-q">What is the integral of sin²x?</div><div class="doubt-meta"><span>Ravi Kumar</span><span>1 day ago</span><span class="doubt-status review">Under Review</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="db-chat-btn" title="AI Chatbot">💬<span class="db-chat-online"></span></button>
+</div>
+
+<script>
+
+const TEACHER_NAV = [
+  { id:'t-overview',      icon:'🏠', label:'Overview',          href:'teacher-overview.html' },
+  { id:'t-doubts',        icon:'❓', label:'Doubt Queue',        href:'doubt-queue.html', badge:3 },
+  { id:'t-notes',         icon:'📝', label:'Notes Manager',      href:'notes-manager.html' },
+  { id:'t-announcements', icon:'📢', label:'Announcements',      href:'announcements.html' },
+  { id:'t-schedule',      icon:'📅', label:'Schedule Manager',   href:'schedule-manager.html' },
+  { id:'t-sessions',      icon:'🎥', label:'1-to-1 Sessions',    href:'teacher-sessions.html' },
+  { id:'t-profile',       icon:'⚙️', label:'Settings',           href:'teacher-settings.html' },
+];
+
+
+function buildNav() {
+  document.getElementById('dbNavItems').innerHTML = TEACHER_NAV.map(item => `
+    <a
+      href="${item.href}"
+      class="db-nav-item ${item.id === 't-overview' ? 'active teacher-nav' : ''}"
+      id="nav-${item.id}"
+    >
+      <span class="db-nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+
+      ${item.badge ? `<span class="db-nav-badge">${item.badge}</span>` : ''}
+    </a>
+  `).join('');
+}
+
+
+buildNav();
+
+
+// ===============================
+// TEACHER SESSION CHECK
+// ===============================
+(function initTeacherSession() {
+
+  const raw = localStorage.getItem('eduNetUser');
+
+  // No logged-in user
+  if (!raw) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  const user = JSON.parse(raw);
+
+  // Student trying to open teacher dashboard
+  if (user.role !== 'teacher') {
+    window.location.href = 'Overview.html';
+    return;
+  }
+
+  // Display teacher information
+  document.getElementById('dbUserName').textContent = user.name;
+  document.getElementById('dbUserRole').textContent = 'Teacher';
+
+  // Generate initials
+  document.getElementById('dbAvatar').textContent =
+    user.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+
+  // Welcome message
+  document.getElementById('dbTeacherWelcomeTitle').textContent =
+    `Welcome back, ${user.name.split(' ')[0]}! 👋`;
+
+})();
+
+
+// ===============================
+// LOGOUT
+// ===============================
+document.querySelector('.btn-logout').addEventListener('click', function () {
+
+  localStorage.removeItem('eduNetUser');
+
+  window.location.href = 'index.html';
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard — AI Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #05050a;
+  --bg2: #080810;
+  --surface: rgba(255,255,255,0.03);
+  --surface2: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.06);
+  --border-glow: rgba(139,92,246,0.3);
+  --text: #f0f0ff;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --purple: #8b5cf6;
+  --purple2: #7c3aed;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --pink: #ec4899;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* DASHBOARD SHELL (always visible on this standalone page) */
+.dashboard-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: #05050a;
+  display: flex; flex-direction: row;
+  opacity: 1; pointer-events: all;
+  overflow: hidden;
+}
+
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+  transition: width 0.3s;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
+
+.db-nav-section { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #4b5563; text-transform: uppercase; padding: 10px 20px 6px; }
+.db-nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 20px; margin: 1px 10px; border-radius: 10px;
+  cursor: pointer; font-size: 13.5px; font-weight: 500; color: #9ca3af;
+  transition: all 0.2s; position: relative;
+}
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active { background: rgba(139,92,246,0.12); color: #a78bfa; }
+.db-nav-item.active.student-nav { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.db-nav-item.active.teacher-nav { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; }
+.db-avatar.student { background: linear-gradient(135deg,#1d4ed8,#60a5fa); }
+.db-avatar.teacher { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+.db-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.db-topbar-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #f0f0ff; }
+.db-topbar-right { display: flex; align-items: center; gap: 12px; }
+.db-notif-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; transition: background 0.2s; position: relative;
+}
+.db-notif-btn:hover { background: rgba(255,255,255,0.08); }
+.db-notif-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; border: 2px solid #05050a; }
+
+.db-page { display: none; flex: 1; overflow-y: auto; padding: 28px 32px 80px; }
+.db-page.active { display: block; }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+
+.page-header { margin-bottom:22px; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; letter-spacing:-0.3px; margin-bottom:4px; }
+.page-header p { font-size:13px; color:#9ca3af; }
+
+.db-btn-sm { padding:9px 18px; border-radius:9px; border:none; background:linear-gradient(135deg,#7c3aed,#8b5cf6); color:white; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
+.db-btn-sm:hover { box-shadow:0 4px 16px rgba(139,92,246,0.4); transform:translateY(-1px); }
+.db-btn-sm.ghost { background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9ca3af; }
+.db-btn-sm.ghost:hover { background:rgba(255,255,255,0.05); }
+
+.db-chat-btn { position:fixed; bottom:28px; right:28px; width:54px; height:54px; background:linear-gradient(135deg,#6d28d9,#8b5cf6); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10001; box-shadow:0 0 0 0 rgba(139,92,246,0.4); animation:chat-pulse 3s ease infinite; transition:transform 0.2s; border:none; }
+.db-chat-btn:hover { transform:scale(1.1); }
+.db-chat-online { position:absolute; top:2px; right:2px; width:14px; height:14px; background:#22c55e; border-radius:50%; border:2px solid #05050a; }
+@keyframes chat-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139,92,246,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(139,92,246,0); }
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .db-sidebar { width: 60px; }
+  .db-sidebar-logo span, .db-nav-item span:not(.db-nav-icon), .db-nav-section, .db-user-card, .btn-logout span { display:none; }
+  .db-page { padding:20px 16px 80px; }
+  .db-nav-item { padding:10px; justify-content:center; margin:2px 6px; }
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard-overlay active" id="dashboardOverlay">
+  <div class="db-sidebar">
+    <div class="db-sidebar-logo">
+      <img class="logo-icon" src="https://api.iconify.design/ph:graduation-cap-fill.svg?color=%238b5cf6" alt="">
+      <span>Edu-Net</span>
+    </div>
+    <div id="dbNavItems"></div>
+    <div class="db-sidebar-bottom">
+      <div class="db-user-card">
+        <div class="db-avatar student" id="dbAvatar">JD</div>
+        <div class="db-user-info">
+          <div class="db-user-name" id="dbUserName">John Doe</div>
+          <div class="db-user-role" id="dbUserRole">Student</div>
+        </div>
+      </div>
+      <button class="btn-logout"><span>→</span> <span>Logout</span></button>
+    </div>
+  </div>
+
+  <div class="db-main">
+    <div class="db-topbar">
+      <div class="db-topbar-title" id="dbPageTitle">AI Chatbot</div>
+      <div class="db-topbar-right">
+        <div class="db-notif-btn">🔔<div class="db-notif-dot"></div></div>
+        <div class="db-notif-btn">💬</div>
+      </div>
+    </div>
+
+    <!-- S10: AI Chatbot -->
+    <div class="db-page active" id="page-chatbot">
+      <div class="page-header"><h2>🤖 AI Chatbot</h2><p>Ask anything — your 24/7 learning assistant</p></div>
+      <div style="display:flex;flex-direction:column;height:calc(100vh - 180px);min-height:500px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden">
+        <div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:12px;background:rgba(10,8,20,0.5)">
+          <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative">🤖<div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #05050a"></div></div>
+          <div><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#f0f0ff">Edu-Net AI Assistant</div><div style="font-size:11px;color:#22c55e">● Online — Always available</div></div>
+          <div style="margin-left:auto;display:flex;gap:8px"><button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px" onclick="clearChat()">🗑 Clear</button></div>
+        </div>
+        <div id="chatMessages" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:480px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">👋 Hello! I'm your <strong>Edu-Net AI Assistant</strong>.<br><br>📚 Explain any concept<br>❓ Solve doubts step-by-step<br>📅 Study planning & tips<br><br>What would you like to learn today?</div></div></div></div>
+        </div>
+        <div id="chatSuggestions" style="padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.05)">
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Newton's laws</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Calculus formulas</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Python basics</button>
+          <button onclick="sendSuggestion(this)" style="padding:6px 13px;border-radius:999px;border:1px solid rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);color:#a78bfa;font-size:12px;cursor:pointer">Exam preparation tips</button>
+        </div>
+        <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:10px;align-items:flex-end;background:rgba(10,8,20,0.5)">
+          <textarea id="chatInput" rows="1" placeholder="Ask anything... (Enter to send)" onkeydown="handleChatKey(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;color:#f0f0ff;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;line-height:1.5;max-height:120px;overflow-y:auto"></textarea>
+          <button onclick="sendChatMessage()" style="width:42px;height:42px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="db-chat-btn" title="AI Chatbot">💬<span class="db-chat-online"></span></button>
+</div>
+
+<script>
+const STUDENT_NAV = [
+ { id:'overview',      icon:'🏠', label:'Overview',         href:'Overview.html' },
+  { id:'notes',         icon:'📝', label:'Notes Library',    href:'noteslibrary.html' },
+  { id:'doubts',        icon:'❓', label:'My Doubts',        href:'doubts.html',        badge:2 },
+  { id:'timetable',     icon:'📅', label:'Timetable',        href:'timetable.html' },
+  { id:'sessions',      icon:'🎥', label:'1-to-1 Sessions',  href:'sessions.html' },
+  { id:'announcements', icon:'📢', label:'Announcements',    href:'announcements.html', badge:3 },
+  { id:'attendance',    icon:'✅', label:'Attendance',       href:'attendance.html' },
+  { id:'notifications', icon:'🔔', label:'Notifications',    href:'notifications.html', badge:5 },
+  { id:'chatbot',       icon:'🤖', label:'AI Chatbot',       href:'chatbot.html' },
+  { id:'ebooks',        icon:'📖', label:'E-Books',          href:'ebooks.html' },
+  { id:'profile',       icon:'⚙️', label:'Settings',         href:'settings.html' },
+];
+
+function buildNav() {
+  document.getElementById('dbNavItems').innerHTML = STUDENT_NAV.map(item => `
+    <div class="db-nav-item ${item.id==='chatbot'?'active student-nav':''}" id="nav-${item.id}">
+      <span class="db-nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+      ${item.badge ? `<span class="db-nav-badge">${item.badge}</span>` : ''}
+    </div>
+  `).join('');
+}
+buildNav();
+
+const BOT_RESPONSES = {
+  newton: "**Newton's Laws of Motion** ⚡\n\n1️⃣ **First Law (Inertia):** An object remains at rest or in uniform motion unless acted upon by an external net force.\n📌 Example: A book on a table stays still until you push it.\n\n2️⃣ **Second Law (F = ma):** Force = Mass × Acceleration\n📌 Example: Pushing a heavy cart needs more force than a light one.\n\n3️⃣ **Third Law (Action-Reaction):** Every action has an equal & opposite reaction.\n📌 Example: When you jump, your feet push the ground down — ground pushes you up!\n\nWant to solve a numerical on this? 😊",
+  motion: "**Equations of Motion** 🚀\n\nFor uniform acceleration:\n\n📐 v = u + at\n📐 s = ut + ½at²\n📐 v² = u² + 2as\n\nWhere:\n• u = initial velocity\n• v = final velocity\n• a = acceleration\n• t = time\n• s = displacement\n\n💡 Tip: Always write down what's given first, then pick the right equation!\n\nWant me to solve a sample problem?",
+  electricity: "**Electricity Basics** ⚡\n\n🔋 **Ohm's Law:** V = IR\n(Voltage = Current × Resistance)\n\n⚡ **Power:** P = VI = I²R = V²/R\n\n🔌 **Series Circuit:**\n• Same current flows through all\n• R_total = R₁ + R₂ + R₃\n\n🔌 **Parallel Circuit:**\n• Same voltage across all\n• 1/R_total = 1/R₁ + 1/R₂\n\n💡 Tip: In series, current is same. In parallel, voltage is same!\n\nAny specific topic — Kirchhoff's laws, capacitors?",
+  force: "**Forces & Their Types** 💪\n\n• **Gravitational Force** — pulls objects towards Earth (g = 9.8 m/s²)\n• **Normal Force** — perpendicular support from surface\n• **Friction** — opposes motion (f = μN)\n• **Tension** — force in strings/ropes\n• **Applied Force** — direct push or pull\n\n**Free Body Diagram tip:** Draw the object as a dot, then show ALL forces acting on it with arrows. Net force = ma!\n\nWant a numerical example?",
+  calculus: "**Calculus — Complete Overview** 📐\n\n**Differentiation (Finding slope/rate of change):**\n• d/dx(xⁿ) = nxⁿ⁻¹\n• d/dx(sin x) = cos x\n• d/dx(cos x) = −sin x\n• d/dx(eˣ) = eˣ\n• d/dx(ln x) = 1/x\n• Chain Rule: d/dx[f(g(x))] = f'(g(x)) · g'(x)\n\n**Integration (Finding area):**\n• ∫xⁿ dx = xⁿ⁺¹/(n+1) + C\n• ∫sin x dx = −cos x + C\n• ∫eˣ dx = eˣ + C\n\n💡 Remember: Differentiation and Integration are inverse operations!\n\nWhich topic — limits, chain rule, or definite integrals?",
+  algebra: "**Algebra Key Concepts** ➕\n\n**Quadratic Formula:**\nx = (−b ± √(b²−4ac)) / 2a\n\n**Important Identities:**\n• (a+b)² = a² + 2ab + b²\n• (a−b)² = a² − 2ab + b²\n• (a+b)(a−b) = a² − b²\n• (a+b)³ = a³ + 3a²b + 3ab² + b³\n\n**Tips for solving equations:**\n1. Simplify both sides first\n2. Move variables to one side\n3. Isolate the unknown\n4. Verify your answer!\n\nWant help with a specific algebraic problem?",
+  geometry: "**Geometry Formulas** 📏\n\n**2D Shapes:**\n• Circle: Area = πr², Circumference = 2πr\n• Triangle: Area = ½ × base × height\n• Rectangle: Area = l × b, Perimeter = 2(l+b)\n• Trapezium: Area = ½(a+b) × h\n\n**3D Shapes:**\n• Sphere: Volume = (4/3)πr³, SA = 4πr²\n• Cylinder: Volume = πr²h, CSA = 2πrh\n• Cone: Volume = (⅓)πr²h, Slant l = √(r²+h²)\n• Cube: Volume = a³, SA = 6a²\n\n💡 Tip: Always note the units — cm vs cm² vs cm³!\n\nNeed help with a specific shape or theorem?",
+  trigonometry: "**Trigonometry Essentials** 📐\n\n**Basic Ratios (SOH-CAH-TOA):**\n• sin θ = Opposite / Hypotenuse\n• cos θ = Adjacent / Hypotenuse\n• tan θ = Opposite / Adjacent\n\n**Key Values:**\n0°: sin 0, cos 1, tan 0\n30°: sin ½, cos √3/2, tan 1/√3\n45°: sin 1/√2, cos 1/√2, tan 1\n60°: sin √3/2, cos ½, tan √3\n90°: sin 1, cos 0, tan ∞\n\n**Identities:**\n• sin²θ + cos²θ = 1\n• tan θ = sin θ / cos θ\n\nNeed help with any specific formula or problem?",
+  programming: "**Programming Basics** 💻\n\n**Core Concepts:**\n• **Variable** — stores data (int x = 5)\n• **Function** — reusable block of code\n• **Loop** — repeats code (for, while)\n• **Condition** — decision making (if/else)\n• **Array** — collection of same-type data\n\n**Time Complexity (Big O):**\n• O(1) — Constant (best!)\n• O(log n) — Binary Search\n• O(n) — Linear Search\n• O(n²) — Bubble Sort\n\n**Tips for beginners:**\n1. Break problems into small steps\n2. Write pseudocode first\n3. Test with small inputs\n4. Debug one error at a time\n\nWhich language — Python, Java, C++?",
+  algorithm: "**Algorithms — Key Types** 🔍\n\n**Sorting Algorithms:**\n• Bubble Sort — O(n²) — compare & swap neighbors\n• Selection Sort — O(n²) — find min, place it\n• Insertion Sort — O(n²) — insert in right place\n• Merge Sort — O(n log n) — divide & conquer ✅\n• Quick Sort — O(n log n) avg — pivot based ✅\n\n**Searching Algorithms:**\n• Linear Search — O(n) — check each element\n• Binary Search — O(log n) — requires sorted array ✅\n\n**Graph Algorithms:**\n• BFS — Level-by-level traversal (uses Queue)\n• DFS — Depth-first traversal (uses Stack/Recursion)\n\n💡 For interviews: Know Merge Sort + Binary Search thoroughly!\n\nWant a step-by-step example of any algorithm?",
+  python: "**Python Quick Reference** 🐍\n\n**Basics:**\nx = 10          # variable\nprint('Hello')  # output\ntype(x)         # check type\n\n**Lists:**\narr = [1, 2, 3]\narr.append(4)   # add\narr.pop()       # remove last\nlen(arr)        # length\n\n**Functions:**\ndef greet(name):\n    return f'Hello, {name}!'\n\n**Loops:**\nfor i in range(5):    # 0 to 4\n    print(i)\n\nwhile x > 0:\n    x -= 1\n\n💡 Python is indentation-sensitive — always use 4 spaces!\n\nWant help with OOP, file handling, or recursion?",
+  javascript: "**JavaScript Essentials** 🌐\n\n**Variables:**\n• let — block scoped, can reassign\n• const — block scoped, cannot reassign\n• var — function scoped (avoid in modern JS)\n\n**Arrow Functions:**\nconst add = (a, b) => a + b;\n\n**Array Methods:**\n• .map() — transform each element\n• .filter() — keep matching elements\n• .reduce() — collapse to single value\n• .forEach() — loop through\n\n**Async/Await:**\nasync function getData() {\n  const res = await fetch(url);\n  const data = await res.json();\n  return data;\n}\n\n💡 async/await is just cleaner syntax for Promises!\n\nNeed help with DOM, events, or frameworks?",
+  study: "**Smart Study Plan** 📅\n\n**Daily Schedule:**\n🌅 Morning (2 hrs) — Hardest subjects (Maths/Physics)\n☀️ Afternoon (1.5 hrs) — Theory subjects (Bio/Chem)\n🌆 Evening (1 hr) — Revision & practice problems\n🌙 Night — Light reading, no screens 30 min before sleep\n\n**Proven Techniques:**\n🍅 **Pomodoro** — 25 min focus + 5 min break\n🔁 **Active Recall** — Test yourself instead of re-reading\n📊 **Spaced Repetition** — Review after 1 day, 3 days, 1 week\n🗺️ **Mind Maps** — Connect concepts visually\n✍️ **Feynman Technique** — Explain it simply to understand deeply\n\n**Exam Prep Tips:**\n• Solve previous year papers 🗓️\n• Time yourself during practice\n• Don't skip sleep before exams!\n\nWant a weekly study plan for a specific subject?",
+  exam: "**Exam Preparation Strategy** 🎯\n\n**4 Weeks Before:**\n• Complete all syllabus topics\n• Make short notes / formula sheets\n• Identify weak areas\n\n**2 Weeks Before:**\n• Solve past papers (timed!)\n• Focus on high-weightage chapters\n• Revise formulas daily\n\n**1 Week Before:**\n• Only revision — no new topics\n• Attempt mock tests\n• Sleep 7–8 hours every night\n\n**Day Before Exam:**\n• Light revision only\n• Prepare stationery & ID\n• Sleep on time — rest > cramming!\n\n**During Exam:**\n✅ Read all questions first\n✅ Attempt easy ones first\n✅ Manage time — don't get stuck\n✅ Review answers if time permits\n\nNeed a study plan for a specific exam?",
+  motivation: "**Stay Motivated While Studying** 💪\n\n**When you feel like giving up:**\n• Remember your WHY — why did you start?\n• Break big goals into tiny daily wins\n• Celebrate small progress 🎉\n• Compare yourself to yesterday, not others\n\n**Beat Procrastination:**\n• Use the 2-Minute Rule — if it takes <2 min, do it now\n• Start with the hardest task first (Eat the Frog! 🐸)\n• Remove distractions — phone on silent, away from social media\n\n**Mindset Shifts:**\n• 'I can't do this yet' → Growth mindset\n• Failure = Feedback, not the end\n• Consistency beats intensity every time\n\n**Quick Reset:**\n• 10 deep breaths 🧘\n• 5-minute walk outside\n• Drink water, eat something\n\nYou've got this! 🌟 What's the subject giving you trouble?",
+  default: [
+    "That's a great question! 🤔 Let me help you break it down.\n\nCould you tell me:\n1️⃣ Which subject is this from?\n2️⃣ Which chapter or topic?\n3️⃣ What specifically is confusing you?\n\nThe more context you give, the better I can explain! 😊",
+    "Interesting topic! Here's how I'd approach it:\n\n📖 Start with the core definition\n🔍 Look at a real-world example\n✍️ Practice a few problems\n🔁 Revise after 24 hours\n\nTell me which subject — Physics, Maths, CS, or Study Tips — and I'll give you a detailed explanation!",
+    "I'm here to help! 🙌\n\nI can assist you with:\n⚡ Physics — Newton's Laws, Motion, Electricity\n📐 Maths — Calculus, Algebra, Geometry, Trigonometry\n💻 CS — Programming, Algorithms, Python, JavaScript\n📅 Study Tips — Planning, Exam Prep, Motivation\n\nJust ask your doubt and I'll explain it step by step!"
+  ]
+};
+
+let botIdx = 0;
+function getBotReply(msg) {
+  const l = msg.toLowerCase();
+  if (l.includes('newton') || (l.includes('law') && l.includes('motion'))) return BOT_RESPONSES.newton;
+  if (l.includes('motion') || l.includes('velocity') || l.includes('acceleration') || l.includes('displacement')) return BOT_RESPONSES.motion;
+  if (l.includes('electric') || l.includes('ohm') || l.includes('current') || l.includes('resistance') || l.includes('voltage') || l.includes('circuit')) return BOT_RESPONSES.electricity;
+  if (l.includes('force') || l.includes('friction') || l.includes('tension') || l.includes('gravity')) return BOT_RESPONSES.force;
+  if (l.includes('calculus') || l.includes('integral') || l.includes('derivative') || l.includes('differentiat')) return BOT_RESPONSES.calculus;
+  if (l.includes('algebra') || l.includes('quadratic') || l.includes('equation') || l.includes('factor')) return BOT_RESPONSES.algebra;
+  if (l.includes('geometry') || l.includes('circle') || l.includes('triangle') || l.includes('area') || l.includes('volume')) return BOT_RESPONSES.geometry;
+  if (l.includes('trigon') || l.includes('sin') || l.includes('cos') || l.includes('tan') || l.includes('angle')) return BOT_RESPONSES.trigonometry;
+  if (l.includes('python')) return BOT_RESPONSES.python;
+  if (l.includes('javascript') || l.includes('js') || l.includes('async') || l.includes('await') || l.includes('promise')) return BOT_RESPONSES.javascript;
+  if (l.includes('algorithm') || l.includes('sort') || l.includes('search') || l.includes('bfs') || l.includes('dfs')) return BOT_RESPONSES.algorithm;
+  if (l.includes('program') || l.includes('code') || l.includes('coding')) return BOT_RESPONSES.programming;
+  if (l.includes('exam') || l.includes('test') || l.includes('paper') || l.includes('preparation')) return BOT_RESPONSES.exam;
+  if (l.includes('motivat') || l.includes('procrastinat') || l.includes('give up') || l.includes('stressed') || l.includes('focus')) return BOT_RESPONSES.motivation;
+  if (l.includes('study') || l.includes('plan') || l.includes('schedule') || l.includes('routine') || l.includes('tips')) return BOT_RESPONSES.study;
+  return BOT_RESPONSES.default[botIdx++ % BOT_RESPONSES.default.length];
+}
+
+function addMessage(text, isUser) {
+  const msgs = document.getElementById('chatMessages'); if (!msgs) return;
+  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const av = document.getElementById('dbAvatar');
+  const initials = av ? av.textContent : 'U';
+  if (isUser) {
+    msgs.innerHTML += `<div style="display:flex;gap:10px;align-items:flex-start;flex-direction:row-reverse"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#60a5fa);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0">${initials}</div><div style="text-align:right"><div style="background:linear-gradient(135deg,rgba(29,78,216,0.3),rgba(96,165,250,0.2));border:1px solid rgba(96,165,250,0.25);border-radius:16px 4px 16px 16px;padding:11px 15px;max-width:380px;display:inline-block;text-align:left"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6;white-space:pre-wrap">${text}</div></div><div style="font-size:11px;color:#4b5563;margin-top:4px;padding-right:4px">${t}</div></div></div>`;
+  } else {
+    const fmt = text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    msgs.innerHTML += `<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:460px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">${fmt}</div></div><div style="font-size:11px;color:#4b5563;margin-top:4px;padding-left:4px">${t}</div></div></div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendChatMessage() {
+  const inp = document.getElementById('chatInput'); if (!inp) return;
+  const msg = inp.value.trim(); if (!msg) return;
+  const sugg = document.getElementById('chatSuggestions'); if(sugg) sugg.style.display='none';
+  addMessage(msg, true); inp.value = ''; inp.style.height='auto';
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += `<div id="typingInd" style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px"><div style="display:flex;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0s"></div><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.2s"></div><div style="width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:typing-dot 1.2s infinite 0.4s"></div></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => { const t=document.getElementById('typingInd'); if(t)t.remove(); addMessage(getBotReply(msg),false); }, 1000+Math.random()*500);
+}
+function handleChatKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMessage();} }
+function sendSuggestion(btn) { const inp=document.getElementById('chatInput'); if(inp){inp.value=btn.textContent;sendChatMessage();} }
+function clearChat() {
+  const msgs=document.getElementById('chatMessages'); if(!msgs)return;
+  msgs.innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:15px">🤖</div><div><div style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:4px 16px 16px 16px;padding:12px 16px;max-width:460px"><div style="font-size:13.5px;color:#f0f0ff;line-height:1.6">Chat cleared! Start a new conversation 😊</div></div></div></div>`;
+  const sugg=document.getElementById('chatSuggestions'); if(sugg)sugg.style.display='flex';
+}
+</script>
+
+</body>
+</html>

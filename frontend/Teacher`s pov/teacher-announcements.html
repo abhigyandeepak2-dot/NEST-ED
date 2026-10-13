@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Announcements Manager — Edu-Net</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root { --bg: #05050a; --text: #f0f0ff; }
+
+html, body { height:100%; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex; flex-direction: row;
+  min-height: 100vh; overflow: hidden;
+}
+
+/* ================= SIDEBAR ================= */
+.db-sidebar {
+  width: 230px; flex-shrink: 0;
+  background: rgba(10,8,20,0.95);
+  border-right: 1px solid rgba(139,92,246,0.12);
+  display: flex; flex-direction: column;
+  padding: 0 0 20px; overflow-y: auto;
+  height: 100vh;
+}
+.db-sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 20px 18px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: #f0f0ff;
+  border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px;
+}
+.db-sidebar-logo .logo-icon { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; background:linear-gradient(135deg,#6d28d9,#8b5cf6); display:flex; align-items:center; justify-content:center; }
+
+.db-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 20px;
+  margin: 1px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #9ca3af;
+  transition: all 0.2s;
+  position: relative;
+
+  /* IMPORTANT */
+  text-decoration: none;
+}
+
+.db-nav-item:link,
+.db-nav-item:visited,
+.db-nav-item:hover,
+.db-nav-item:active {
+  text-decoration: none;
+}
+
+.db-nav-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: #f0f0ff;
+}
+
+.db-nav-item.active {
+  background: rgba(245,158,11,0.12);
+  color: #f59e0b;
+}
+.db-nav-item:hover { background: rgba(255,255,255,0.04); color: #f0f0ff; }
+.db-nav-item.active { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.db-nav-icon { font-size: 17px; width: 20px; text-align: center; flex-shrink: 0; }
+.db-nav-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px; min-width: 18px; text-align: center; }
+
+.db-sidebar-bottom { margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(255,255,255,0.05); }
+.db-user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+}
+.db-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; background: linear-gradient(135deg,#b45309,#f59e0b); }
+.db-user-info { flex: 1; min-width: 0; }
+.db-user-name { font-size: 13px; font-weight: 600; color: #f0f0ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-user-role { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.btn-logout {
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  color: #6b7280; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-logout:hover { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #f87171; }
+
+/* ================= MAIN AREA ================= */
+.db-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; height: 100vh; }
+.db-topbar {
+  height: 58px; flex-shrink: 0;
+  background: rgba(10,8,20,0.8); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139,92,246,0.1);
+  display: flex; align-items: center;
+  padding: 0 26px;
+}
+.db-topbar-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:#f0f0ff; }
+.db-content { padding: 26px; max-width: 900px; }
+
+.page-header { margin-bottom: 22px; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#f0f0ff; letter-spacing:-0.3px; margin-bottom:4px; }
+.page-header p { font-size:13px; color:#9ca3af; }
+
+.db-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:18px; padding:20px 22px; }
+.db-card-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:14px; color:#f0f0ff; display:flex; align-items:center; gap:8px; }
+
+.db-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:10px; padding:10px 13px; color:#f0f0ff; font-family:'DM Sans',sans-serif; font-size:14px; outline:none; transition:border-color 0.25s, box-shadow 0.25s; margin-bottom:12px; resize:vertical; }
+.db-input::placeholder { color:#6b7280; }
+.db-input:focus { border-color:rgba(139,92,246,0.5); box-shadow:0 0 0 3px rgba(139,92,246,0.1); }
+
+.db-btn-sm { padding:9px 18px; border-radius:9px; border:none; background:linear-gradient(135deg,#7c3aed,#8b5cf6); color:white; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:7px; }
+.db-btn-sm:hover { box-shadow:0 4px 16px rgba(139,92,246,0.4); transform:translateY(-1px); }
+.db-btn-sm.orange { background:linear-gradient(135deg,#b45309,#f59e0b); }
+.db-btn-sm.red { background:linear-gradient(135deg,#991b1b,#ef4444); }
+.db-btn-sm.ghost { background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9ca3af; }
+.db-btn-sm.ghost:hover { background:rgba(255,255,255,0.05); }
+
+.ann-item { padding:14px 16px; border-radius:13px; margin-bottom:10px; border-left:3px solid; position:relative; }
+.ann-item.red { background:rgba(239,68,68,0.07); border-color:#ef4444; }
+.ann-item.yellow { background:rgba(245,158,11,0.07); border-color:#f59e0b; }
+.ann-title { font-size:13.5px; font-weight:700; color:#f0f0ff; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+.ann-body { font-size:12.5px; color:#9ca3af; line-height:1.55; }
+.ann-time { font-size:11px; color:#6b7280; margin-top:6px; }
+.ann-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:999px; }
+.ann-badge.red { background:rgba(239,68,68,0.2); color:#f87171; }
+.ann-badge.yellow { background:rgba(245,158,11,0.2); color:#fcd34d; }
+</style>
+</head>
+<body>
+
+<div class="db-sidebar">
+  <div class="db-sidebar-logo">
+    <div class="logo-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="rgba(255,255,255,0.95)"/><path d="M2 7v5c0 0 3.5 4 10 4s10-4 10-4V7" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div>
+    <span>Edu-Net</span>
+  </div>
+  <div>
+  <a href="teacher-overview.html" class="db-nav-item">
+    <span class="db-nav-icon">🏠</span>
+    <span>Overview</span>
+  </a>
+
+  <a href="doubt-queue.html" class="db-nav-item">
+    <span class="db-nav-icon">❓</span>
+    <span>Doubt Queue</span>
+    <span class="db-nav-badge">3</span>
+  </a>
+
+  <a href="notes-manager.html" class="db-nav-item">
+    <span class="db-nav-icon">📝</span>
+    <span>Notes Manager</span>
+  </a>
+
+  <a href="teacher-announcements.html" class="db-nav-item active">
+    <span class="db-nav-icon">📢</span>
+    <span>Announcements</span>
+  </a>
+
+  <a href="schedule-manager.html" class="db-nav-item">
+    <span class="db-nav-icon">📅</span>
+    <span>Schedule Manager</span>
+  </a>
+
+  <a href="teacher-sessions.html" class="db-nav-item">
+    <span class="db-nav-icon">🎥</span>
+    <span>1-to-1 Sessions</span>
+  </a>
+
+  <a href="attendance.html" class="db-nav-item">
+    <span class="db-nav-icon">✅</span>
+    <span>Attendance</span>
+  </a>
+
+  <a href="teacher-settings.html" class="db-nav-item">
+    <span class="db-nav-icon">⚙️</span>
+    <span>Settings</span>
+  </a>
+</div>
+  <div class="db-sidebar-bottom">
+    <div class="db-user-card">
+      <div class="db-avatar">PS</div>
+      <div class="db-user-info">
+        <div class="db-user-name">Prof. Sharma</div>
+        <div class="db-user-role">Teacher</div>
+      </div>
+    </div>
+    <button class="btn-logout"><span>→</span> <span>Logout</span></button>
+  </div>
+</div>
+
+<div class="db-main">
+  <div class="db-topbar"><div class="db-topbar-title">Announcements</div></div>
+  <div class="db-content">
+    <div class="page-header"><h2>📢 Announcements Manager</h2><p>Create and manage announcements for students</p></div>
+    <div class="db-card" style="margin-bottom:18px">
+      <div class="db-card-title">➕ Create New Announcement</div>
+      <input class="db-input" placeholder="Announcement Title"/>
+      <textarea class="db-input" rows="3" placeholder="Write your message here..."></textarea>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="db-btn-sm red" style="font-size:11px;padding:5px 12px">🔴 Urgent</button>
+        <button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px">🟡 Medium</button>
+        <button class="db-btn-sm ghost" style="font-size:11px;padding:5px 12px">🔵 Info</button>
+      </div>
+      <button class="db-btn-sm orange">📌 Pin & Publish</button>
+    </div>
+    <div class="db-card">
+      <div class="db-card-title">📋 Published Announcements</div>
+      <div class="ann-item red"><div class="ann-title">⚠️ Mid-Term Exams Schedule <span class="ann-badge red">Urgent</span></div><div class="ann-body">Mid-term exams start November 15–22.</div><div class="ann-time">Today · 142 students notified</div></div>
+      <div class="ann-item yellow"><div class="ann-title">📝 Assignment Deadline <span class="ann-badge yellow">Medium</span></div><div class="ann-body">Web Dev assignment due this Friday at 11:59 PM.</div><div class="ann-time">Yesterday · 98 students notified</div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
